@@ -1,0 +1,42 @@
+{
+  "exp_id": "t1_b0_500",
+  "seed": 1,
+  "phase": "eval",
+  "wall_time_s": 2.13,
+  "device": "NVIDIA",
+  "config": {
+    "dataset": "nordland",
+    "data_dir": "/home/ps/datasets/Nordland",
+    "database_places": 500,
+    "query_places": 500,
+    "max_module": 500,
+    "database_dirs": "spring,fall",
+    "query_dir": "summer",
+    "GT_tolerance": 0,
+    "skip": 0,
+    "filter": 8,
+    "epoch": 4,
+    "patches": 7,
+    "dims": "28,28",
+    "train_new_model": false,
+    "quantize": false,
+    "model_name": null,
+    "PR_curve": true,
+    "sim_mat": false,
+    "run_demo": false,
+    "exp_id": "t1_b0_500",
+    "patch_norm": "on",
+    "frontend": "none",
+    "seed": 1
+  },
+  "recallAtK": {
+    "1": 0.93,
+    "5": 0.98,
+    "10": 0.99,
+    "15": 0.99,
+    "20": 0.99,
+    "25": 0.99
+  },
+  "recallAt100precision": 0.7601713062098501,
+  "precisionAt100recall": 0.9550102249488752
+}
