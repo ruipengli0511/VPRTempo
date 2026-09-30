@@ -39,7 +39,7 @@ ssh -o BatchMode=yes vpr-workspace "hostname && nvidia-smi -L && df -h /home/ps/
 | GPU | RTX 4090（GPU 0）+ RTX 4090 D（GPU 1），`--gpus all` 映射 |
 | 当前 GPU 争抢 | 无（师姐只用 CPU），两块卡都可以用 |
 | Python 环境 | Pixi 管理，运行格式：`cd /home/ps/workspace/VPRTempo && pixi run --environment cuda python main.py ...` |
-| Git 真理源 | GitHub `lrp-666/VPRTempo`，本地分支状态以 `git fetch` 后为准 |
+| Git 真理源 | GitHub `ruipengli0511/VPRTempo`（2026-09-29 起，旧账号 lrp-666 已弃用），本地分支状态以 `git fetch` 后为准 |
 | 训练输出 | 写 `/home/ps/workspace/...`（读写）或容器内项目目录；**绝不能写 `/home/ps/datasets`（只读）** |
 
 ### 四、工作纪律（必须遵守）
@@ -85,4 +85,4 @@ scp -r vpr-workspace:/home/ps/workspace/VPRTempo/results/ ./results/
 
 > 本提示词假设 Kimi Code 运行在工位主机上——这一前提**不变**（kimi web 就跑在工位主机的 WSL 里）。从外地接入时，打开书签 `http://100.125.209.43:58627/#token=<token>`（token 见 WSL `~/.kimi-code/server.token`）即可，进入后按本提示词正文正常工作，无需任何改动。
 
-远程控制层与工作站的完整开工自检、工作流、故障速查见配套《远程控制环境移交文档.md》。
+远程控制层与工作站的完整开工自检、工作流、故障速查见《工作站环境移交文档.md》第十章。
