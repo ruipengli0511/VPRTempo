@@ -36,6 +36,7 @@
     - [S3.3 实验 1.3 / 1.4：消融](#s33-实验-13--14消融)
     - [S3.4 实验 1.5：效率表（Table 4）](#s34-实验-15效率表table-4)
     - [S3.5 补充实验（审稿预案驱动）](#s35-补充实验审稿预案驱动)
+    - [S3.6 实验：feature 层可塑性分解（F0–F3）+ 手工描述子直通基线（v7 新增）](#s36-实验feature-层可塑性分解f0f3--手工描述子直通基线v7-新增)
   - [6. 决策门与风险（提前承诺，防止事后移动球门）](#6-决策门与风险提前承诺防止事后移动球门)
   - [7. 篇幅与时间线](#7-篇幅与时间线)
   - [8. Fork 会话指引（给未来的实现会话）](#8-fork-会话指引给未来的实现会话)
@@ -676,6 +677,70 @@ conv2（k=5, 无 padding）：28 → 24
 1. **不要笼统叫"STDP"**。单步幅度域没有 spike timing，`ΔK = η·(0.5−post)·pre` 在数学上是带自稳定项的归一化 Hebb / Oja 型规则。审稿人里只要有一个神经形态背景的，"你的 STDP 里 timing 在哪"就是必中评论。论文措辞定为：*single-step competitive Hebbian plasticity*，并显式说明它是 BLiTNet/VPRTempo STDP 公式在单步极限下的退化形式（继承关系写清楚，既诚实又自然衔接 VPRTempo 系文献）。代码里模块名保留 `conv_stdp` 无妨（实现血缘），正文命名要严谨。
 2. **"学到的不就是 Gabor 吗，直接用手工滤波器组不就行了"**——这正是 B5 存在的理由（§0.4），主文用 B2 vs B5 一行数据 + Figure 2 的核对比回应，不要在 related work 里空辩。
 
+### S3.6 实验：feature 层可塑性分解（F0–F3）+ 手工描述子直通基线（v7 新增）
+
+> 母会话决策（2026-10-09）：只做 B5 Gabor 前端（block2 winner 口径）；规模直接 500+3300 双档；HOG 本次一并实现；先立此卡片再动手。
+
+**背景与动机**
+
+至今全部实验（B0–B6、动物园、feat-BCM）的 feature 层恒为「STDP+ITP 全开」，被消融或冻结的只有前端 conv 层。因此现有数据无法回答「VPRTempo 的表征到底来自 feature 层的学习，还是来自其结构/读出」。本卡把 feature 层的**权重学习**与**阈值学习**正交拆成 2×2，在固定 B5 Gabor 前端上跑四组；另加手工描述子直通检索（绕过整个 SNN 的纯外部基线，补齐从未实现的 HOG）。
+
+五个对比问题：
+- **F1 − F0**：阈值适应（ITP）单独值多少？
+- **F2 − F0**：权重学习（STDP）单独值多少？
+- **F3 − F1**：阈值适应已存在时，STDP 还有多少增量？
+- **F3（feature 描述子） vs B5 轨 B（前端描述子直通）**：多一层 feature 层值不值？
+- **HOG 直通 vs Gabor 直通**：两种经典手工描述子谁强（外部基线定位，不进主表）。
+
+**前置依赖**
+
+- S1.1–S1.4 基础设施（配置系统 / seed 三件套 / 轨 B 评测 / GT 共用函数 `vprtempo/src/gt.py`）。
+- S2.9 B5 Gabor 前端（`frontend='gabor'`，frozen + ITP 由 `load_gabor_weights` 内部设置，配置无需 `itp_on_frozen` 字段）。
+- **锚点免跑**：F3 ≡ 现有 B5（`b5_500_block2`，500 地轨 B 0.984；3300 地取主表数字）；前端直通 ≡ B5 轨 B 的 `feature_point='conv'` 结果（轨 B 默认特征点即前端池化输出）。
+- 实际新训练只有 F1、F2；F0 是冻结直通（训练循环对 feature 层为空转）。
+
+**机制裁决（写死，防实现漂移）**
+
+`calc_stdp` 无监督分支（blitnet.py:529-637）含四件事：STDP 权重更新（555-568）、符号钳制（582-584）、ITP 阈值更新（597-606）、Homeostasis 抑制权重缩放（626-634）。归属裁决：
+
+| 旋钮 | 归属 | 理由 |
+|---|---|---|
+| STDP + 符号钳制 + Homeostasis | 「权重更新」一侧 | Homeostasis 改的是抑制权重不是阈值，随权重整体开关 |
+| ITP | 「阈值更新」一侧 | 公式 (5) Δθ |
+
+- F0 = 四件事全跳过（feature 层恒等于随机初始化）；F1 = 只 ITP；F2 = 权重三件、无 ITP；F3 = 全开（= 现状一行不改）。
+- feature 层判定用 `layer.spk_force == False`；output 层恒传 `True/True`，行为逐比特不变。
+
+**详细操作**
+
+1. 代码改动（3 处 + 1 个新模块，全部默认行为不变）：
+   - `vprtempo/src/blitnet.py`：`calc_stdp(..., update_weight=True, update_thr=True)`，权重三件包进 `if update_weight:`，ITP 块增 `update_thr` 条件。
+   - `vprtempo/VPRTempoTrain.py`：`train_model` 调 `calc_stdp` 处按 `layer.spk_force` 取 `getattr(self,'feat_stdp',True)/getattr(self,'feat_itp',True)` 传参（`VPRTempoTrain.py:107` 已把 `vars(args)` 全拷为属性，无需改 `__init__`）。
+   - `main.py`：`--feat_stdp {on,off}`、`--feat_itp {on,off}`，默认 `on`（B0/B5 回归不破）。
+   - HOG：`IDEA1-covstdp/src/hog_descriptor.py`——用环境已有 `cv2.HOGDescriptor`（opencv>=4.12，无新依赖）；28×28 灰度输入取 win=28、block=14、stride=7、cell=7、nbins=9 → 972 维。配套 `IDEA1-covstdp/experiments/eval_hog.py`：同 `ProcessImage` 的灰度+gamma+resize 前三步（**不过 PatchNorm**——HOG 自带块归一化）→ HOG → L2 → cosine → 复用 `gt.py` 的同一 GT 与 `recallAtK` 协议。**不进 SNN**。
+2. 配置（phase3/configs/ 新增，均以 `b5_500_block2.json` 为底、只加两个字段；3300 版同法）：
+   - `f0_b5_500.json`：`feat_stdp=off, feat_itp=off`
+   - `f1_b5_500.json`：`feat_stdp=off, feat_itp=on`
+   - `f2_b5_500.json`：`feat_stdp=on, feat_itp=off`
+   - 3300 对应 `f0/f1/f2_b5_3300.json`（数据通路字段照抄主表 3300 配置）。
+3. 执行：`run_exp.py --train --eval`（F0 也走完整训练流程——feature 层冻结、output 层照训但不影响轨 B 描述子）；HOG 走 `eval_hog.py`（无训练，500/3300 都便宜）。seeds {0,1,2}；轨 B 为主（`feature_point='feature_layer'`），轨 A 顺带落盘。3300 档优先工作站 GPU（算力规程见 §8）。
+4. 汇总：仿 `make_table1.py` 出「F0–F3 + Gabor 直通 + HOG 直通」× 双规模 × 3 seeds 表，指标 R@1/5/10/25 + R@100%P + P@100%R，落盘 `results/f0f3_feature_ablate.md`。
+
+**预注册判据（写死再跑）**
+
+- 效应存在：|ΔR@1| > 2pt（迭代档噪声口径）且 3 seeds 同号；否则如实报「无效应」。
+- **F3 − F1 ≈ 0** → 「STDP 无增量」成立：阈值适应是 feature 层的主要机制，措辞如实写（这是对 VPRTempo 学习叙事影响最大的格子）。
+- **F3 − F1 > 0 显著** → 双机制互补，按贡献各写一段。
+- **F0 vs Gabor 直通**：F0 ≈ 直通 → 随机 E/I 投影无害也无益；F0 > 直通 → 结构本身有增益（值得一段）；F0 < 直通 → 随机投影有损（如实报）。
+- HOG vs Gabor 直通只作外部基线引用，不进主表、不参与 gate。
+
+**验收**
+
+1. **F0 冻结验证**：训练结束后 feature 层权重与初始化逐元素一致（训练前后权重 md5 相同）——证明「无权重更新」真的无更新。
+2. **回归**：不带新 flag 时 `calc_stdp` 行为与 main 逐比特一致（F3 锚点复用成立、既有结果不受影响）。
+3. **机制确实发生**：F1 训后 feature 层 thr 分布相对初始化发生移动（ITP 生效）；F2 训后权重相对初始化的 L1 变化量 > 0（STDP 生效）。各 dump 一次即可。
+4. 产出 `results/f0f3_feature_ablate.md`：五个对比各一段结论 + 汇总表 + HOG 基线数字。
+
 ---
 
 ## 5b. 阶段 4（候选方向，归档不插队）：任务对齐的局部可塑性
@@ -798,3 +863,4 @@ conv2（k=5, 无 padding）：28 → 24
 - [ ] S3.3 消融（Table 2/3/3b + 附录）
 - [ ] S3.4 效率（Table 4）
 - [ ] S3.5 ORC 复跑 + SpikingJelly 参照
+- [ ] S3.6 feature 层 F0–F3 分解消融 + HOG/Gabor 直通基线（预注册判据见卡片 §S3.6）
