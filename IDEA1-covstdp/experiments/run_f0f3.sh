@@ -18,9 +18,9 @@
 # 特性（对齐 run_table1.sh 约定）：
 #   - 双卡队列：每格绑定一张卡，格间启动 sleep 2（防 logger 秒级时间戳撞目录）；
 #   - 断点续跑：轨 A eval.json 与轨 B __trackB_feature_layer.json 都存在的格跳过；
-#   - HOG 格最先调度（gpu1，便宜且确定性，失败不影响 F 组训练格）；
+#   - HOG 格最先调度（便宜且确定性，失败不影响 F 组训练格）；
 #   - 进度写 results/f0f3_progress.log；每格 stdout/stderr 存 results/f0f3_logs/；
-#   - 失败的格不标完成，下次运行自动重试。
+#   - 失败的格标 FAIL，下次运行自动重试。
 #
 # 纪律：本脚本只负责执行；何时点火由母会话审定。
 # ================================================================================
@@ -66,21 +66,25 @@ hog_done() {  # hog_done <places>
 }
 
 run_hog() {  # run_hog <gpu>
-    local gpu=$1 t0=$SECONDS
+    local gpu=$1 t0=$SECONDS rc=0
     {
         export CUDA_VISIBLE_DEVICES=$gpu
         export MPLBACKEND=Agg
-        hog_done 500 || "${PY[@]}" IDEA1-covstdp/experiments/eval_hog.py \
-            "$CFG_DIR/f3_b5_500.json" || exit 1
-        sleep 2
-        hog_done 3300 || "${PY[@]}" IDEA1-covstdp/experiments/eval_hog.py \
-            "$CFG_DIR/f3_b5_3300_eval.json" || exit 1
+        if ! hog_done 500; then
+            "${PY[@]}" IDEA1-covstdp/experiments/eval_hog.py \
+                --config "$CFG_DIR/f3_b5_500.json" || rc=1
+            sleep 2
+        fi
+        if [ $rc -eq 0 ] && ! hog_done 3300; then
+            "${PY[@]}" IDEA1-covstdp/experiments/eval_hog.py \
+                --config "$CFG_DIR/f3_b5_3300_eval.json" || rc=1
+        fi
     } > "$CELL_LOG_DIR/hog.log" 2>&1
-    local rc=$?
+    local wall=$((SECONDS - t0))
     if [ $rc -eq 0 ] && hog_done 500 && hog_done 3300; then
-        log_progress DONE "hog(500+3300)" "-" "$gpu" $((SECONDS - t0))
+        log_progress DONE "hog(500+3300)" "-" "$gpu" "$wall"
     else
-        log_progress "FAIL(rc=$rc)" "hog(500+3300)" "-" "$gpu" $((SECONDS - t0))
+        log_progress "FAIL(rc=$rc)" "hog(500+3300)" "-" "$gpu" "$wall"
     fi
     return $rc
 }
@@ -89,7 +93,7 @@ run_cell() {  # run_cell <variant> <scale> <seed> <gpu>
     local v=$1 scale=$2 seed=$3 gpu=$4
     local exp="${v}_b5_${scale}"
     local cell_log="$CELL_LOG_DIR/${exp}__seed${seed}.log"
-    local t0=$SECONDS
+    local t0=$SECONDS rc=0
     {
         echo "===== $(date '+%F %T') cell ${exp} seed${seed} on GPU ${gpu} ====="
         export CUDA_VISIBLE_DEVICES=$gpu
@@ -97,27 +101,28 @@ run_cell() {  # run_cell <variant> <scale> <seed> <gpu>
         if ! tracka_done "$exp" "$seed"; then
             if [ "$scale" = "500" ]; then
                 "${PY[@]}" IDEA1-covstdp/experiments/run_exp.py \
-                    "$CFG_DIR/${v}_b5_500.json" --train --eval --seed "$seed" || exit 1
+                    "$CFG_DIR/${v}_b5_500.json" --train --eval --seed "$seed" || rc=1
             else
                 "${PY[@]}" IDEA1-covstdp/experiments/run_exp.py \
-                    "$CFG_DIR/${v}_b5_3300.json" --train --seed "$seed" || exit 1
-                sleep 2   # train/eval 两进程间留 logger 时间戳间隔
-                "${PY[@]}" IDEA1-covstdp/experiments/run_exp.py \
-                    "$CFG_DIR/${v}_b5_3300_eval.json" --eval --seed "$seed" || exit 1
+                    "$CFG_DIR/${v}_b5_3300.json" --train --seed "$seed" || rc=1
+                if [ $rc -eq 0 ]; then
+                    sleep 2   # train/eval 两进程间留 logger 时间戳间隔
+                    "${PY[@]}" IDEA1-covstdp/experiments/run_exp.py \
+                        "$CFG_DIR/${v}_b5_3300_eval.json" --eval --seed "$seed" || rc=1
+                fi
             fi
         else
             echo "[run_f0f3] 轨 A 已存在，跳过训练+评估"
         fi
-        if ! trackb_done "$exp" "$seed"; then
+        if [ $rc -eq 0 ] && ! trackb_done "$exp" "$seed"; then
             local eval_cfg="$CFG_DIR/${v}_b5_500.json"
             [ "$scale" = "3300" ] && eval_cfg="$CFG_DIR/${v}_b5_3300_eval.json"
             "${PY[@]}" IDEA1-covstdp/experiments/eval_retrieval.py \
-                "$eval_cfg" --seed "$seed" || exit 1
+                "$eval_cfg" --seed "$seed" || rc=1
         else
-            echo "[run_f0f3] 轨 B 已存在，跳过"
+            [ $rc -ne 0 ] || echo "[run_f0f3] 轨 B 已存在，跳过"
         fi
     } > "$cell_log" 2>&1
-    local rc=$?
     local wall=$((SECONDS - t0))
     if [ $rc -eq 0 ] && tracka_done "$exp" "$seed" && trackb_done "$exp" "$seed"; then
         log_progress DONE "$exp" "$seed" "$gpu" "$wall"
@@ -128,7 +133,7 @@ run_cell() {  # run_cell <variant> <scale> <seed> <gpu>
 }
 
 # ---------------- 双卡调度队列 ----------------
-# HOG 最先（gpu1，便宜确定性）；随后 F 组按 500 优先排序（先出迭代档结论）。
+# HOG 优先（便宜确定性）；随后 F 组按 500 优先排序（先出迭代档结论）。
 declare -A SLOT_PID=()
 declare -A SLOT_CELL=()
 
@@ -165,7 +170,7 @@ while [ $idx -lt $total ] || [ ${#SLOT_PID[@]} -gt 0 ] || { [ "$hog_pending" = 1
             unset "SLOT_PID[$gpu]" "SLOT_CELL[$gpu]"
         fi
     done
-    # HOG 优先占 gpu1（或当前空位）
+    # HOG 优先占空位
     if [ "$hog_pending" = 1 ] && [ "$hog_started" = 0 ]; then
         for ((gpu = 0; gpu < NUM_GPUS; gpu++)); do
             [ -n "${SLOT_PID[$gpu]:-}" ] && continue
