@@ -16,7 +16,17 @@ def model_logger():
     os.makedirs(output_base_folder, exist_ok=True)
     
     # Create the specific output folder
-    os.mkdir(output_folder)
+    # 【IDEA1】秒级时间戳撞目录防护：批量跑批时多个进程可能在同一秒进入此函数，
+    # os.mkdir 遇重名直接 FileExistsError 崩溃；撞名时追加 -2/-3/… 后缀直至可用。
+    # 正常串行运行（目录唯一）行为不变。
+    try:
+        os.mkdir(output_folder)
+    except FileExistsError:
+        _i = 2
+        while os.path.isdir(f"{output_folder}-{_i}"):
+            _i += 1
+        output_folder = f"{output_folder}-{_i}"
+        os.mkdir(output_folder)
     # Create the logger
     logger = logging.getLogger("VPRTempo")
     if (logger.hasHandlers()):
@@ -71,7 +81,17 @@ def model_logger_quant():
     os.makedirs(output_base_folder, exist_ok=True)
     
     # Create the specific output folder
-    os.mkdir(output_folder)
+    # 【IDEA1】秒级时间戳撞目录防护：批量跑批时多个进程可能在同一秒进入此函数，
+    # os.mkdir 遇重名直接 FileExistsError 崩溃；撞名时追加 -2/-3/… 后缀直至可用。
+    # 正常串行运行（目录唯一）行为不变。
+    try:
+        os.mkdir(output_folder)
+    except FileExistsError:
+        _i = 2
+        while os.path.isdir(f"{output_folder}-{_i}"):
+            _i += 1
+        output_folder = f"{output_folder}-{_i}"
+        os.mkdir(output_folder)
     # Create the logger
     logger = logging.getLogger("VPRTempo")
     if (logger.hasHandlers()):

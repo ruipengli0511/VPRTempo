@@ -17,10 +17,15 @@
 #
 # 特性（对齐 run_table1.sh 约定）：
 #   - 双卡队列：每格绑定一张卡，格间启动 sleep 2（防 logger 秒级时间戳撞目录）；
-#   - 断点续跑：轨 A eval.json 与轨 B __trackB_feature_layer.json 都存在的格跳过；
+#   - 断点续跑：轨 B __trackB_feature_layer.json 存在即跳过该格（轨 A 是顺带
+#     落盘，不作完成判定——F0 组 track A 可能 createPR 除零崩溃，见下）；
 #   - HOG 格最先调度（便宜且确定性，失败不影响 F 组训练格）；
 #   - 进度写 results/f0f3_progress.log；每格 stdout/stderr 存 results/f0f3_logs/；
 #   - 失败的格标 FAIL，下次运行自动重试。
+#
+# 完成判定 = 轨 B 落盘（本实验的分析对象全部是轨 B 描述子检索；
+# 轨 A 仅顺带落盘且对 F0 组 best-effort——随机冻结特征层下 output 层退化，
+# createPR 可能除零，属已知实验现象，不阻断轨 B）。
 #
 # 纪律：本脚本只负责执行；何时点火由母会话审定。
 # ================================================================================
@@ -93,38 +98,38 @@ run_cell() {  # run_cell <variant> <scale> <seed> <gpu>
     local v=$1 scale=$2 seed=$3 gpu=$4
     local exp="${v}_b5_${scale}"
     local cell_log="$CELL_LOG_DIR/${exp}__seed${seed}.log"
+    local train_cfg="$CFG_DIR/${v}_b5_500.json"
+    local eval_cfg="$CFG_DIR/${v}_b5_500.json"
+    if [ "$scale" = "3300" ]; then
+        train_cfg="$CFG_DIR/${v}_b5_3300.json"
+        eval_cfg="$CFG_DIR/${v}_b5_3300_eval.json"
+    fi
+    local model_pth="vprtempo/models/${exp}__seed${seed}.pth"
     local t0=$SECONDS rc=0
     {
         echo "===== $(date '+%F %T') cell ${exp} seed${seed} on GPU ${gpu} ====="
         export CUDA_VISIBLE_DEVICES=$gpu
         export MPLBACKEND=Agg
-        if ! tracka_done "$exp" "$seed"; then
-            if [ "$scale" = "500" ]; then
-                "${PY[@]}" IDEA1-covstdp/experiments/run_exp.py \
-                    "$CFG_DIR/${v}_b5_500.json" --train --eval --seed "$seed" || rc=1
-            else
-                "${PY[@]}" IDEA1-covstdp/experiments/run_exp.py \
-                    "$CFG_DIR/${v}_b5_3300.json" --train --seed "$seed" || rc=1
-                if [ $rc -eq 0 ]; then
-                    sleep 2   # train/eval 两进程间留 logger 时间戳间隔
-                    "${PY[@]}" IDEA1-covstdp/experiments/run_exp.py \
-                        "$CFG_DIR/${v}_b5_3300_eval.json" --eval --seed "$seed" || rc=1
-                fi
-            fi
+        # 1) 训练（必须，产出 .pth）
+        if [ ! -f "$model_pth" ]; then
+            "${PY[@]}" IDEA1-covstdp/experiments/run_exp.py \
+                "$train_cfg" --train --seed "$seed" || rc=1
         else
-            echo "[run_f0f3] 轨 A 已存在，跳过训练+评估"
+            echo "[run_f0f3] 模型已存在，跳过训练"
         fi
+        # 2) 轨 A（顺带落盘，best-effort：不阻断轨 B）
+        if [ $rc -eq 0 ] && ! tracka_done "$exp" "$seed"; then
+            "${PY[@]}" IDEA1-covstdp/experiments/run_exp.py \
+                "$eval_cfg" --eval --seed "$seed" || true
+        fi
+        # 3) 轨 B（本实验核心产出：feature_layer 描述子检索）
         if [ $rc -eq 0 ] && ! trackb_done "$exp" "$seed"; then
-            local eval_cfg="$CFG_DIR/${v}_b5_500.json"
-            [ "$scale" = "3300" ] && eval_cfg="$CFG_DIR/${v}_b5_3300_eval.json"
             "${PY[@]}" IDEA1-covstdp/experiments/eval_retrieval.py \
                 "$eval_cfg" --seed "$seed" || rc=1
-        else
-            [ $rc -ne 0 ] || echo "[run_f0f3] 轨 B 已存在，跳过"
         fi
     } > "$cell_log" 2>&1
     local wall=$((SECONDS - t0))
-    if [ $rc -eq 0 ] && tracka_done "$exp" "$seed" && trackb_done "$exp" "$seed"; then
+    if [ $rc -eq 0 ] && trackb_done "$exp" "$seed"; then
         log_progress DONE "$exp" "$seed" "$gpu" "$wall"
     else
         log_progress "FAIL(rc=$rc)" "$exp" "$seed" "$gpu" "$wall"
@@ -147,8 +152,8 @@ for scale in "${SCALES[@]}"; do          # 500 整批排在 3300 之前
     for v in "${VARIANTS[@]}"; do
         for seed in "${SEEDS[@]}"; do
             exp="${v}_b5_${scale}"
-            if tracka_done "$exp" "$seed" && trackb_done "$exp" "$seed"; then
-                echo "[run_f0f3] SKIP（已完成）$exp seed$seed"
+            if trackb_done "$exp" "$seed"; then
+                echo "[run_f0f3] SKIP（轨 B 已完成）$exp seed$seed"
             else
                 pending+=("$v $scale $seed")
             fi
