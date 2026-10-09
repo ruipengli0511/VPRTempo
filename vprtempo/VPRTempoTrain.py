@@ -475,8 +475,20 @@ class VPRTempoTrain(nn.Module):
                 #   2. ITP  阈值调整（内在阈值可塑性）
                 #   3. Homeostasis 稳态归一化（防止某些神经元过活跃）
                 #   4. Spike Forcing（如果 layer.spk_force=True，通过 idx 强制发放）
+                # 【IDEA1 S3.6】feature 层可塑性分解（F0–F3 消融）：
+                #   - feature 层（spk_force=False）的权重/阈值更新由 --feat_stdp /
+                #     --feat_itp 分别控制（on/off，默认 on = 原行为）；
+                #   - output 层（spk_force=True）恒传 True/True，Spike Forcing 分支
+                #     本身不受开关影响，行为逐比特不变。
                 # -----------------------------------------------------------------
-                layer = bn.calc_stdp(pre_spike, spikes, spikes_noclp, layer, idx, prev_layer=prev_layer)
+                if layer.spk_force == False:
+                    # 防御性兼容 bool：转 str 后 .lower() != 'off' 得 True
+                    update_weight = str(getattr(self, 'feat_stdp', 'on')).lower() != 'off'
+                    update_thr = str(getattr(self, 'feat_itp', 'on')).lower() != 'off'
+                else:
+                    update_weight, update_thr = True, True
+                layer = bn.calc_stdp(pre_spike, spikes, spikes_noclp, layer, idx, prev_layer=prev_layer,
+                                     update_weight=update_weight, update_thr=update_thr)
                 
                 # -----------------------------------------------------------------
                 # 【行级注释】学习率退火，每 100 步更新一次

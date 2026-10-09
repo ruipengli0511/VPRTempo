@@ -411,25 +411,33 @@ def clamp_spikes(spikes, layer):
 #   spikes     : 当前层（post-synaptic）的脉冲输出 x_j^n(t)（经过 clamp 后的）
 #   noclp      : 当前层在 clamp 前的原始净输入（未减去阈值、未钳制）
 #                用于 Homeostasis，判断净输入的正负
-#   layer      : 当前要更新的 SNNLayer 实例
-#   idx        : 当前样本对应的输出神经元索引（仅用于 Spike Forcing）
-#   prev_layer : 前一层的 SNNLayer 实例（用于获取其 fire_rate 以调制学习率）
+#   layer         : 当前要更新的 SNNLayer 实例
+#   idx           : 当前样本对应的输出神经元索引（仅用于 Spike Forcing）
+#   prev_layer    : 前一层的 SNNLayer 实例（用于获取其 fire_rate 以调制学习率）
+#   update_weight : 【IDEA1 S3.6】是否执行"权重更新"侧（无监督 STDP 兴奋/抑制更新 +
+#                   符号钳制 + Homeostasis，三者同属权重一侧，见 PLAN.md S3.6 机制裁决）。
+#                   默认 True = 原行为不变。仅对分支二（无监督）生效；
+#                   Spike Forcing 分支（output_layer）不受此开关影响。
+#   update_thr    : 【IDEA1 S3.6】是否执行 ITP 阈值更新（公式 5）。
+#                   默认 True = 原行为不变。仅对分支二的 ITP 块生效。
 # ================================================================================
 def calc_stdp(prespike,  # 前一层的脉冲输出 x_i^m(t-1)，形状 [batch, 输入维度]
               spikes,    # 当前层的脉冲输出 x_j^n(t)，形状 [batch, 输出维度]，已经经过 clamp
               noclp,     # 当前层在 clamp 前的原始净输入（未减去阈值、未钳制），形状 [batch, 输出维度]
               layer,     # 当前要更新的 SNNLayer 实例，包含权重、阈值、学习率等参数
               idx,       # 当前样本对应的输出神经元索引（仅用于 Spike Forcing），形状 [1]，值为当前训练样本的地点标签经换算后的输出神经元索引
-              prev_layer=None  # 前一层的 SNNLayer 实例，用于获取其 fire_rate 以调制学习率（仅在 Spike Forcing 中使用）
+              prev_layer=None,  # 前一层的 SNNLayer 实例，用于获取其 fire_rate 以调制学习率（仅在 Spike Forcing 中使用）
+              update_weight=True,  # 【IDEA1 S3.6】权重更新开关（STDP+符号钳制+Homeostasis）
+              update_thr=True      # 【IDEA1 S3.6】阈值更新开关（ITP）
               ):
     """
     逐层说明：
         本函数实现了 BLiTNet/VPRTempo 的完整学习规则，包括：
         - Spike Forcing（输出层监督信号）
-        - 标准 STDP（特征层无监督特征学习）
-        - 权重符号保持（兴奋/抑制不翻转）
-        - ITP（阈值可塑性）
-        - Homeostasis（抑制权重动态平衡）
+        - 标准 STDP（特征层无监督特征学习，受 update_weight 开关控制）
+        - 权重符号保持（兴奋/抑制不翻转，受 update_weight 开关控制）
+        - ITP（阈值可塑性，受 update_thr 开关控制）
+        - Homeostasis（抑制权重动态平衡，受 update_weight 开关控制）
     """
 
     # ================================================================================
@@ -533,39 +541,44 @@ def calc_stdp(prespike,  # 前一层的脉冲输出 x_i^m(t-1)，形状 [batch, 
         # ----------------------------------------
         shape = layer.w.weight.data.shape
 
-        # ----------------------------------------
-        # 逐行说明：张量广播（Tile）
-        # ----------------------------------------
-        # 与 Spike Forcing 分支类似，将 pre/post 向量扩展为矩阵
-        pre = torch.tile(torch.reshape(prespike, (shape[1], 1)), (1, shape[0]))
-        post = torch.tile(spikes, (shape[1], 1))
+        # 【IDEA1 S3.6】权重更新开关：F0/F1（feat_stdp=off）时整个权重更新侧跳过，
+        # 特征层权重恒等于随机初始化（PLAN.md S3.6 机制裁决：STDP/符号钳制/Homeostasis
+        # 同属"权重更新"一侧，随该开关整体启停）。update_weight=True 时与原版逐比特一致。
+        if update_weight:
 
-        # ----------------------------------------
-        # 逐行说明：兴奋性权重更新（公式 2）
-        # ----------------------------------------
-        # 更新量 = (0.5 - post) * (pre > 0) * (post > 0) * η_STDP
-        # 物理意义拆解：
-        #   (pre > 0)    : Heaviside 函数 Θ(x_i^m(t-1))，前层必须发放
-        #   (post > 0)   : Heaviside 函数 Θ(x_j^n(t))，后层必须发放
-        #   (0.5 - post) : 调制因子。若 post 较小（如 0.1），则增量 +0.4，大幅增强；
-        #                  若 post 较大（如 0.9），则增量 -0.4，反而减弱。
-        #                  这使得后层脉冲趋向于中等幅度（≈0.5），防止饱和。
-        #   η_STDP       : 当前时刻的学习率
-        #   havconnCombinedExc.T : 兴奋连接掩码，确保只有正权重被更新
-        layer.w.weight.data += (((0.5 - post) * (pre > 0) * (post > 0) *
-                                  layer.havconnCombinedExc.T) 
-                                  * layer.eta_stdp).T
+            # ----------------------------------------
+            # 逐行说明：张量广播（Tile）
+            # ----------------------------------------
+            # 与 Spike Forcing 分支类似，将 pre/post 向量扩展为矩阵
+            pre = torch.tile(torch.reshape(prespike, (shape[1], 1)), (1, shape[0]))
+            post = torch.tile(spikes, (shape[1], 1))
 
-        # ----------------------------------------
-        # 逐行说明：抑制性权重更新
-        # ----------------------------------------
-        # 与兴奋性权重更新公式相同，但作用在抑制连接掩码上
-        # 且学习率乘以 -1，使得更新方向相反：
-        #   当 (0.5 - post) > 0（post 不足）时，兴奋权重增加，抑制权重减小（趋近于 0）
-        #   这是因为抑制输入对输出有负向贡献，要增加输出就应该减弱抑制。
-        layer.w.weight.data += (((0.5 - post) * (pre > 0) * (post > 0) 
-                                 * layer.havconnCombinedInh.T) 
-                                 * (layer.eta_stdp * -1)).T
+            # ----------------------------------------
+            # 逐行说明：兴奋性权重更新（公式 2）
+            # ----------------------------------------
+            # 更新量 = (0.5 - post) * (pre > 0) * (post > 0) * η_STDP
+            # 物理意义拆解：
+            #   (pre > 0)    : Heaviside 函数 Θ(x_i^m(t-1))，前层必须发放
+            #   (post > 0)   : Heaviside 函数 Θ(x_j^n(t))，后层必须发放
+            #   (0.5 - post) : 调制因子。若 post 较小（如 0.1），则增量 +0.4，大幅增强；
+            #                  若 post 较大（如 0.9），则增量 -0.4，反而减弱。
+            #                  这使得后层脉冲趋向于中等幅度（≈0.5），防止饱和。
+            #   η_STDP       : 当前时刻的学习率
+            #   havconnCombinedExc.T : 兴奋连接掩码，确保只有正权重被更新
+            layer.w.weight.data += (((0.5 - post) * (pre > 0) * (post > 0) *
+                                      layer.havconnCombinedExc.T)
+                                      * layer.eta_stdp).T
+
+            # ----------------------------------------
+            # 逐行说明：抑制性权重更新
+            # ----------------------------------------
+            # 与兴奋性权重更新公式相同，但作用在抑制连接掩码上
+            # 且学习率乘以 -1，使得更新方向相反：
+            #   当 (0.5 - post) > 0（post 不足）时，兴奋权重增加，抑制权重减小（趋近于 0）
+            #   这是因为抑制输入对输出有负向贡献，要增加输出就应该减弱抑制。
+            layer.w.weight.data += (((0.5 - post) * (pre > 0) * (post > 0)
+                                     * layer.havconnCombinedInh.T)
+                                     * (layer.eta_stdp * -1)).T
 
     # ================================================================================
     # 步骤三：权重符号保持（Sign Clamping）
@@ -577,11 +590,14 @@ def calc_stdp(prespike,  # 前一层的脉冲输出 x_i^m(t-1)，形状 [batch, 
     #   - 抑制权重（havconnCombinedInh 标记的位置）钳制在 [-10, -1e-6]
     # 为什么需要这一步？
     #   因为 STDP 更新可能导致小权重越过零点。保持符号确保 E/I 平衡的结构不被破坏。
+    # 【IDEA1 S3.6】同属"权重更新"一侧，随 update_weight 开关整体启停
+    # （冻权重时初始权重即 addWeights 的合法输出，无需再钳制）。
     # ================================================================================
-    # 兴奋权重保持为正：最小 1e-6（防止变零或变负），最大 10（防止过大）
-    layer.w.weight.data[layer.havconnCombinedExc] = layer.w.weight.data[layer.havconnCombinedExc].clamp(min=1e-06, max=10)
-    # 抑制权重保持为负：最小 -10（防止过大负值），最大 -1e-6（防止变零或变正）
-    layer.w.weight.data[layer.havconnCombinedInh] = layer.w.weight.data[layer.havconnCombinedInh].clamp(min=-10, max=-1e-06)
+    if update_weight:
+        # 兴奋权重保持为正：最小 1e-6（防止变零或变负），最大 10（防止过大）
+        layer.w.weight.data[layer.havconnCombinedExc] = layer.w.weight.data[layer.havconnCombinedExc].clamp(min=1e-06, max=10)
+        # 抑制权重保持为负：最小 -10（防止过大负值），最大 -1e-6（防止变零或变正）
+        layer.w.weight.data[layer.havconnCombinedInh] = layer.w.weight.data[layer.havconnCombinedInh].clamp(min=-10, max=-1e-06)
 
     # ================================================================================
     # 步骤四：ITP (Intrinsic Threshold Plasticity) —— 公式 (5)
@@ -593,8 +609,10 @@ def calc_stdp(prespike,  # 前一层的脉冲输出 x_i^m(t-1)，形状 [batch, 
     #   - 若神经元未发放（Θ(x) = 0）且目标发放率 f > 0，则阈值 θ 减小 → 下次更易发放
     #   - 这样使得每个神经元的实际发放率趋向于其目标发放率 f
     # 适用条件：layer.have_rate=True（有非零目标发放率）且 η_ITP > 0
+    # 【IDEA1 S3.6】update_thr 开关（F0/F2 的 feat_itp=off）可单独冻结阈值更新，
+    # 与 update_weight 正交——F1 = 仅 ITP（update_weight=False, update_thr=True）。
     # ================================================================================
-    if layer.have_rate and layer.eta_ip > 0.0:
+    if update_thr and layer.have_rate and layer.eta_ip > 0.0:
 
         # 更新阈值：θ_new = θ_old + η_ITP * (实际发放指示 - 目标发放率)
         # 注意：代码中使用 layer.x（存储的脉冲状态）而非 Θ(spikes)
@@ -622,8 +640,10 @@ def calc_stdp(prespike,  # 前一层的脉冲输出 x_i^m(t-1)，形状 [batch, 
     #       - 若 noclp < 0（净输入为负）且 inhW < 0，乘积 > 0
     #       - 加到原权重上：W += (正数) * η_STDP * 50 → 权重变得不那么负（抑制减弱）
     #   系数 50 是一个经验放大因子，加速 Homeostasis 的收敛。
+    # 【IDEA1 S3.6】Homeostasis 修改的是抑制权重（不是阈值），按 S3.6 机制裁决
+    # 归属"权重更新"一侧，随 update_weight 开关整体启停。
     # ================================================================================
-    if torch.any(layer.w.weight.data).item() and layer.eta_stdp != 0:
+    if update_weight and torch.any(layer.w.weight.data).item() and layer.eta_stdp != 0:
 
         # 提取抑制权重部分（仅保留负值）
         inhW = layer.w.weight.data.T.clone()

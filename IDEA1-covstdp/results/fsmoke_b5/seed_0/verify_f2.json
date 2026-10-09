@@ -1,0 +1,19 @@
+{
+  "mode": "f2",
+  "seed": 0,
+  "flags": [
+    "on",
+    "off"
+  ],
+  "pre": {
+    "w_md5": "a5ed201f913ebe01f8018d555e52bd35",
+    "thr_md5": "0952915e82ca42d18f2d1fae507a1cd7"
+  },
+  "post": {
+    "w_md5": "376e9a3c174e640b2ae15f24019a9b25",
+    "thr_md5": "0952915e82ca42d18f2d1fae507a1cd7"
+  },
+  "w_l1_delta": 2725.860595703125,
+  "thr_l1_delta": 0.0,
+  "pass": true
+}

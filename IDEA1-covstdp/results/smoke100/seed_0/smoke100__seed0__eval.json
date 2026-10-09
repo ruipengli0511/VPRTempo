@@ -2,7 +2,7 @@
   "exp_id": "smoke100",
   "seed": 0,
   "phase": "eval",
-  "wall_time_s": 0.57,
+  "wall_time_s": 1.56,
   "device": "CPU",
   "config": {
     "dataset": "nordland",

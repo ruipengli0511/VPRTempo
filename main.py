@@ -506,6 +506,14 @@ def parse_network():
     parser.add_argument('--itp_on_frozen', action='store_true',
                         help="Keep ITP threshold adaptation on a frozen conv frontend "
                              "(e.g. random_conv); B5 gabor enables this internally (IDEA1)")
+    # ---- IDEA1 S3.6：feature 层可塑性分解（F0–F3 消融，默认 on = B0/B5 回归不破）----
+    # 仅作用于 feature 层（spk_force=False）的无监督分支；output 层恒为全开。
+    parser.add_argument('--feat_stdp', type=str, default='on', choices=['on', 'off'],
+                        help="Feature-layer weight plasticity switch (STDP+clamp+homeostasis), "
+                             "on/off (IDEA1 S3.6); default on = original behavior")
+    parser.add_argument('--feat_itp', type=str, default='on', choices=['on', 'off'],
+                        help="Feature-layer threshold plasticity switch (ITP), "
+                             "on/off (IDEA1 S3.6); default on = original behavior")
     # ---- IDEA1 S2.11 规则锦标赛 Round 1：四个独立可组合的规则手术开关（默认全关 = B2 不变）----
     parser.add_argument('--bcm_gate', action='store_true',
                         help="R1: BCM sliding threshold theta_M (EMA of post^2) replaces fixed 0.5 in conv STDP (IDEA1 S2.11)")
