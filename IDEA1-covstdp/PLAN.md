@@ -863,4 +863,4 @@ conv2（k=5, 无 padding）：28 → 24
 - [ ] S3.3 消融（Table 2/3/3b + 附录）
 - [ ] S3.4 效率（Table 4）
 - [ ] S3.5 ORC 复跑 + SpikingJelly 参照
-- [ ] S3.6 feature 层 F0–F3 分解消融 + HOG/Gabor 直通基线（预注册判据见卡片 §S3.6）
+- [x] S3.6 feature 层 F0–F3 分解消融 + HOG/Gabor 直通基线（**完成，2026-10-09**：双规模 24 格 3 seeds + HOG 2 格；核心发现——F1(仅ITP)≈F3(全开) 且 ≈Gabor 直通，STDP 增量≈0；F2(仅STDP) 中等；F0(全冻) 崩；HOG 远逊 Gabor；3300 地 F1 的 R@100%P(0.468)>Gabor直通(0.386)，STDP 损害严格可分性，与 feat-BCM 互证；见 results/f0f3_feature_ablate.md）
