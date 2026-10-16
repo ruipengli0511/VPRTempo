@@ -1,0 +1,23 @@
+{
+  "_comment": "MLP 对照·variant=m2·500 地·dims=28",
+  "exp_id": "mlp_m2_500_28",
+  "variant": "m2",
+  "dataset": "nordland",
+  "data_dir": null,
+  "database_places": 500,
+  "query_places": 500,
+  "max_module": 500,
+  "database_dirs": "spring,fall",
+  "query_dir": "summer",
+  "GT_tolerance": 0,
+  "skip": 0,
+  "filter": 8,
+  "patches": 7,
+  "dims": "28,28",
+  "patch_norm": "on",
+  "epochs": 4,
+  "batch_size": 32,
+  "lr": 3e-3,
+  "weight_decay": 0.0,
+  "seed": 0
+}
