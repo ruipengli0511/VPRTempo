@@ -1,0 +1,85 @@
+{
+  "exp_id": "mlp_m2_3300_28",
+  "variant": "m2",
+  "seed": 0,
+  "query_dir": "summer",
+  "device": "cpu",
+  "recallAtK": {
+    "1": 0.5396296296296297,
+    "5": 0.6811111111111111,
+    "10": 0.7303703703703703,
+    "15": 0.7603703703703704,
+    "20": 0.7814814814814814,
+    "25": 0.7911111111111111
+  },
+  "final_train_acc_per_module": [
+    1.0,
+    0.9995454545454545,
+    0.9940909090909091
+  ],
+  "train_acc_curve_per_module": [
+    [
+      0.0,
+      0.6027272727272728,
+      0.9822727272727273,
+      1.0
+    ],
+    [
+      0.0,
+      0.5604545454545454,
+      0.9772727272727273,
+      0.9995454545454545
+    ],
+    [
+      0.0009090909090909091,
+      0.5786363636363636,
+      0.9627272727272728,
+      0.9940909090909091
+    ]
+  ],
+  "best_epoch_per_module": [
+    4,
+    4,
+    4
+  ],
+  "cost": {
+    "train_wall_s": 79.64,
+    "n_weight_updates": 828,
+    "eval_wall_s": 9.99,
+    "inference_latency_ms_per_query": 2.239,
+    "peak_gpu_mem_gb": null,
+    "total_params": 8862336,
+    "nonzero_params": 7199509,
+    "forward_flops_per_query": 17724672
+  },
+  "config": {
+    "dataset": "nordland",
+    "data_dir": "/mnt/d/Data/datasets/vpr/Nordland",
+    "database_places": 3300,
+    "query_places": 2700,
+    "max_module": 1100,
+    "database_dirs": "spring,fall",
+    "query_dir": "summer",
+    "GT_tolerance": 0,
+    "skip": 0,
+    "filter": 8,
+    "epoch": 4,
+    "patches": 7,
+    "dims": "28,28",
+    "train_new_model": false,
+    "quantize": false,
+    "model_name": null,
+    "PR_curve": false,
+    "sim_mat": false,
+    "run_demo": false,
+    "exp_id": "mlp_m2_3300_28",
+    "variant": "m2",
+    "patch_norm": "on",
+    "epochs": 4,
+    "batch_size": 32,
+    "lr": 0.001,
+    "weight_decay": 0.0,
+    "seed": 0,
+    "query_skip": 4800
+  }
+}

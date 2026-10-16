@@ -1,0 +1,697 @@
+=== mlp_m0_500_28 seed 0 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0_500_28 variant=m0 seed=0 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.2162 train_acc=0.0000
+  [module 0][train_mlp] epoch 2/4 loss=6.2375 train_acc=0.0050
+  [module 0][train_mlp] epoch 3/4 loss=6.2129 train_acc=0.0040
+  [module 0][train_mlp] epoch 4/4 loss=6.1691 train_acc=0.0040
+[run_mlp] module 0: places=500 samples=1000 updates=128 final_train_acc=0.0040
+[run_mlp] Recall@K = {1: 0.02, 5: 0.06, 10: 0.096, 15: 0.116, 20: 0.142, 25: 0.18}
+[run_mlp] cost = {'train_wall_s': 16.4, 'n_weight_updates': 128, 'eval_wall_s': 2.17, 'inference_latency_ms_per_query': 0.932, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 2013312, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0_500_28/seed_0/mlp_m0_500_28__seed0__mlp.json
+=== mlp_m0_500_28 seed 1 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0_500_28 variant=m0 seed=1 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.2231 train_acc=0.0000
+  [module 0][train_mlp] epoch 2/4 loss=6.2230 train_acc=0.0060
+  [module 0][train_mlp] epoch 3/4 loss=6.2097 train_acc=0.0020
+  [module 0][train_mlp] epoch 4/4 loss=6.2000 train_acc=0.0110
+[run_mlp] module 0: places=500 samples=1000 updates=128 final_train_acc=0.0110
+[run_mlp] Recall@K = {1: 0.014, 5: 0.054, 10: 0.086, 15: 0.116, 20: 0.154, 25: 0.174}
+[run_mlp] cost = {'train_wall_s': 17.96, 'n_weight_updates': 128, 'eval_wall_s': 1.98, 'inference_latency_ms_per_query': 1.14, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 2013312, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0_500_28/seed_1/mlp_m0_500_28__seed1__mlp.json
+=== mlp_m0_500_28 seed 2 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0_500_28 variant=m0 seed=2 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.2253 train_acc=0.0000
+  [module 0][train_mlp] epoch 2/4 loss=6.2033 train_acc=0.0040
+  [module 0][train_mlp] epoch 3/4 loss=6.2076 train_acc=0.0040
+  [module 0][train_mlp] epoch 4/4 loss=6.1441 train_acc=0.0140
+[run_mlp] module 0: places=500 samples=1000 updates=128 final_train_acc=0.0140
+[run_mlp] Recall@K = {1: 0.016, 5: 0.044, 10: 0.084, 15: 0.1, 20: 0.126, 25: 0.156}
+[run_mlp] cost = {'train_wall_s': 16.99, 'n_weight_updates': 128, 'eval_wall_s': 2.92, 'inference_latency_ms_per_query': 0.782, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 2013312, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0_500_28/seed_2/mlp_m0_500_28__seed2__mlp.json
+=== mlp_m0long_500_28 seed 0 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0long_500_28 variant=m0long seed=0 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/50 loss=6.2162 train_acc=0.0000
+  [module 0][train_mlp]   val_score=0.0020 (best=0.0020)
+  [module 0][train_mlp] epoch 2/50 loss=6.2375 train_acc=0.0050
+  [module 0][train_mlp]   val_score=0.0020 (best=0.0020)
+  [module 0][train_mlp] epoch 3/50 loss=6.2129 train_acc=0.0040
+  [module 0][train_mlp]   val_score=0.0100 (best=0.0100)
+  [module 0][train_mlp] epoch 4/50 loss=6.1691 train_acc=0.0040
+  [module 0][train_mlp]   val_score=0.0040 (best=0.0100)
+  [module 0][train_mlp] epoch 5/50 loss=6.1567 train_acc=0.0140
+  [module 0][train_mlp]   val_score=0.0040 (best=0.0100)
+  [module 0][train_mlp] epoch 6/50 loss=6.1125 train_acc=0.0140
+  [module 0][train_mlp]   val_score=0.0060 (best=0.0100)
+  [module 0][train_mlp] epoch 7/50 loss=6.0315 train_acc=0.0210
+  [module 0][train_mlp]   val_score=0.0080 (best=0.0100)
+  [module 0][train_mlp] epoch 8/50 loss=5.7910 train_acc=0.0400
+  [module 0][train_mlp]   val_score=0.0080 (best=0.0100)
+  [module 0][train_mlp] epoch 9/50 loss=5.6939 train_acc=0.0390
+  [module 0][train_mlp]   val_score=0.0140 (best=0.0140)
+  [module 0][train_mlp] epoch 10/50 loss=5.5986 train_acc=0.0700
+  [module 0][train_mlp]   val_score=0.0200 (best=0.0200)
+  [module 0][train_mlp] epoch 11/50 loss=5.3152 train_acc=0.1090
+  [module 0][train_mlp]   val_score=0.0220 (best=0.0220)
+  [module 0][train_mlp] epoch 12/50 loss=4.8365 train_acc=0.1180
+  [module 0][train_mlp]   val_score=0.0220 (best=0.0220)
+  [module 0][train_mlp] epoch 13/50 loss=4.9236 train_acc=0.1290
+  [module 0][train_mlp]   val_score=0.0260 (best=0.0260)
+  [module 0][train_mlp] epoch 14/50 loss=4.5505 train_acc=0.1760
+  [module 0][train_mlp]   val_score=0.0400 (best=0.0400)
+  [module 0][train_mlp] epoch 15/50 loss=4.5919 train_acc=0.1890
+  [module 0][train_mlp]   val_score=0.0480 (best=0.0480)
+  [module 0][train_mlp] epoch 16/50 loss=4.7279 train_acc=0.2290
+  [module 0][train_mlp]   val_score=0.0400 (best=0.0480)
+  [module 0][train_mlp] epoch 17/50 loss=4.5816 train_acc=0.2560
+  [module 0][train_mlp]   val_score=0.0320 (best=0.0480)
+  [module 0][train_mlp] epoch 18/50 loss=3.7377 train_acc=0.2810
+  [module 0][train_mlp]   val_score=0.0360 (best=0.0480)
+  [module 0][train_mlp] epoch 19/50 loss=3.6315 train_acc=0.3040
+  [module 0][train_mlp]   val_score=0.0420 (best=0.0480)
+  [module 0][train_mlp] epoch 20/50 loss=3.3887 train_acc=0.3470
+  [module 0][train_mlp]   val_score=0.0560 (best=0.0560)
+  [module 0][train_mlp] epoch 21/50 loss=3.5745 train_acc=0.3540
+  [module 0][train_mlp]   val_score=0.0560 (best=0.0560)
+  [module 0][train_mlp] epoch 22/50 loss=3.7147 train_acc=0.4150
+  [module 0][train_mlp]   val_score=0.0340 (best=0.0560)
+  [module 0][train_mlp] epoch 23/50 loss=3.6360 train_acc=0.4370
+  [module 0][train_mlp]   val_score=0.0380 (best=0.0560)
+  [module 0][train_mlp] epoch 24/50 loss=2.7529 train_acc=0.4480
+  [module 0][train_mlp]   val_score=0.0560 (best=0.0560)
+  [module 0][train_mlp] epoch 25/50 loss=3.0455 train_acc=0.4660
+  [module 0][train_mlp]   val_score=0.0520 (best=0.0560)
+  [module 0][train_mlp] epoch 26/50 loss=3.1624 train_acc=0.4970
+  [module 0][train_mlp]   val_score=0.0480 (best=0.0560)
+  [module 0][train_mlp] epoch 27/50 loss=3.2045 train_acc=0.5150
+  [module 0][train_mlp]   val_score=0.0480 (best=0.0560)
+  [module 0][train_mlp] epoch 28/50 loss=2.6412 train_acc=0.5480
+  [module 0][train_mlp]   val_score=0.0480 (best=0.0560)
+  [module 0][train_mlp] epoch 29/50 loss=2.6116 train_acc=0.5740
+  [module 0][train_mlp]   val_score=0.0360 (best=0.0560)
+  [module 0][train_mlp] epoch 30/50 loss=2.8544 train_acc=0.5940
+  [module 0][train_mlp]   val_score=0.0660 (best=0.0660)
+  [module 0][train_mlp] epoch 31/50 loss=2.3391 train_acc=0.5960
+  [module 0][train_mlp]   val_score=0.0480 (best=0.0660)
+  [module 0][train_mlp] epoch 32/50 loss=2.4059 train_acc=0.6290
+  [module 0][train_mlp]   val_score=0.0640 (best=0.0660)
+  [module 0][train_mlp] epoch 33/50 loss=2.1200 train_acc=0.6460
+  [module 0][train_mlp]   val_score=0.0620 (best=0.0660)
+  [module 0][train_mlp] epoch 34/50 loss=2.0112 train_acc=0.6520
+  [module 0][train_mlp]   val_score=0.0540 (best=0.0660)
+  [module 0][train_mlp] epoch 35/50 loss=1.9659 train_acc=0.6880
+  [module 0][train_mlp]   val_score=0.0480 (best=0.0660)
+  [module 0][train_mlp] epoch 36/50 loss=1.8586 train_acc=0.6970
+  [module 0][train_mlp]   val_score=0.0520 (best=0.0660)
+  [module 0][train_mlp] epoch 37/50 loss=1.5524 train_acc=0.6940
+  [module 0][train_mlp]   val_score=0.0540 (best=0.0660)
+  [module 0][train_mlp] epoch 38/50 loss=1.7178 train_acc=0.7270
+  [module 0][train_mlp]   val_score=0.0600 (best=0.0660)
+  [module 0][train_mlp] epoch 39/50 loss=2.3053 train_acc=0.7310
+  [module 0][train_mlp]   val_score=0.0560 (best=0.0660)
+  [module 0][train_mlp] epoch 40/50 loss=1.9031 train_acc=0.7500
+  [module 0][train_mlp]   val_score=0.0600 (best=0.0660)
+  [module 0][train_mlp] epoch 41/50 loss=1.9075 train_acc=0.7670
+  [module 0][train_mlp]   val_score=0.0700 (best=0.0700)
+  [module 0][train_mlp] epoch 42/50 loss=2.2213 train_acc=0.7580
+  [module 0][train_mlp]   val_score=0.0640 (best=0.0700)
+  [module 0][train_mlp] epoch 43/50 loss=1.4937 train_acc=0.7830
+  [module 0][train_mlp]   val_score=0.0480 (best=0.0700)
+  [module 0][train_mlp] epoch 44/50 loss=1.6494 train_acc=0.7920
+  [module 0][train_mlp]   val_score=0.0620 (best=0.0700)
+  [module 0][train_mlp] epoch 45/50 loss=2.1473 train_acc=0.8250
+  [module 0][train_mlp]   val_score=0.0500 (best=0.0700)
+  [module 0][train_mlp] epoch 46/50 loss=2.3704 train_acc=0.8030
+  [module 0][train_mlp]   val_score=0.0500 (best=0.0700)
+  [module 0][train_mlp] epoch 47/50 loss=1.6353 train_acc=0.8240
+  [module 0][train_mlp]   val_score=0.0700 (best=0.0700)
+  [module 0][train_mlp] epoch 48/50 loss=1.3161 train_acc=0.8430
+  [module 0][train_mlp]   val_score=0.0600 (best=0.0700)
+  [module 0][train_mlp] epoch 49/50 loss=1.4167 train_acc=0.8490
+  [module 0][train_mlp]   val_score=0.0620 (best=0.0700)
+  [module 0][train_mlp] epoch 50/50 loss=1.1700 train_acc=0.8470
+  [module 0][train_mlp]   val_score=0.0660 (best=0.0700)
+  [module 0][train_mlp] 早停：恢复 epoch 41 的最优权重 (score=0.0700)
+[run_mlp] module 0: places=500 samples=1000 updates=1600 final_train_acc=0.8470
+[run_mlp] Recall@K = {1: 0.388, 5: 0.684, 10: 0.788, 15: 0.818, 20: 0.862, 25: 0.892}
+[run_mlp] cost = {'train_wall_s': 305.79, 'n_weight_updates': 1600, 'eval_wall_s': 2.03, 'inference_latency_ms_per_query': 1.063, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 2013312, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0long_500_28/seed_0/mlp_m0long_500_28__seed0__mlp.json
+=== mlp_m0long_500_28 seed 1 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0long_500_28 variant=m0long seed=1 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/50 loss=6.2231 train_acc=0.0000
+  [module 0][train_mlp]   val_score=0.0020 (best=0.0020)
+  [module 0][train_mlp] epoch 2/50 loss=6.2230 train_acc=0.0060
+  [module 0][train_mlp]   val_score=0.0040 (best=0.0040)
+  [module 0][train_mlp] epoch 3/50 loss=6.2097 train_acc=0.0020
+  [module 0][train_mlp]   val_score=0.0080 (best=0.0080)
+  [module 0][train_mlp] epoch 4/50 loss=6.2000 train_acc=0.0110
+  [module 0][train_mlp]   val_score=0.0080 (best=0.0080)
+  [module 0][train_mlp] epoch 5/50 loss=6.1018 train_acc=0.0130
+  [module 0][train_mlp]   val_score=0.0140 (best=0.0140)
+  [module 0][train_mlp] epoch 6/50 loss=5.9258 train_acc=0.0120
+  [module 0][train_mlp]   val_score=0.0220 (best=0.0220)
+  [module 0][train_mlp] epoch 7/50 loss=5.8593 train_acc=0.0330
+  [module 0][train_mlp]   val_score=0.0140 (best=0.0220)
+  [module 0][train_mlp] epoch 8/50 loss=5.5635 train_acc=0.0580
+  [module 0][train_mlp]   val_score=0.0220 (best=0.0220)
+  [module 0][train_mlp] epoch 9/50 loss=5.6505 train_acc=0.0610
+  [module 0][train_mlp]   val_score=0.0180 (best=0.0220)
+  [module 0][train_mlp] epoch 10/50 loss=5.2622 train_acc=0.1020
+  [module 0][train_mlp]   val_score=0.0320 (best=0.0320)
+  [module 0][train_mlp] epoch 11/50 loss=5.1262 train_acc=0.1440
+  [module 0][train_mlp]   val_score=0.0280 (best=0.0320)
+  [module 0][train_mlp] epoch 12/50 loss=4.8272 train_acc=0.1840
+  [module 0][train_mlp]   val_score=0.0440 (best=0.0440)
+  [module 0][train_mlp] epoch 13/50 loss=4.5638 train_acc=0.2560
+  [module 0][train_mlp]   val_score=0.0600 (best=0.0600)
+  [module 0][train_mlp] epoch 14/50 loss=4.1757 train_acc=0.2900
+  [module 0][train_mlp]   val_score=0.0500 (best=0.0600)
+  [module 0][train_mlp] epoch 15/50 loss=3.9287 train_acc=0.3460
+  [module 0][train_mlp]   val_score=0.0640 (best=0.0640)
+  [module 0][train_mlp] epoch 16/50 loss=3.5934 train_acc=0.3760
+  [module 0][train_mlp]   val_score=0.0540 (best=0.0640)
+  [module 0][train_mlp] epoch 17/50 loss=3.4742 train_acc=0.4180
+  [module 0][train_mlp]   val_score=0.0760 (best=0.0760)
+  [module 0][train_mlp] epoch 18/50 loss=3.3071 train_acc=0.4750
+  [module 0][train_mlp]   val_score=0.0780 (best=0.0780)
+  [module 0][train_mlp] epoch 19/50 loss=3.1406 train_acc=0.4990
+  [module 0][train_mlp]   val_score=0.0940 (best=0.0940)
+  [module 0][train_mlp] epoch 20/50 loss=2.9671 train_acc=0.5730
+  [module 0][train_mlp]   val_score=0.0980 (best=0.0980)
+  [module 0][train_mlp] epoch 21/50 loss=2.4004 train_acc=0.5860
+  [module 0][train_mlp]   val_score=0.0860 (best=0.0980)
+  [module 0][train_mlp] epoch 22/50 loss=3.3601 train_acc=0.6190
+  [module 0][train_mlp]   val_score=0.1000 (best=0.1000)
+  [module 0][train_mlp] epoch 23/50 loss=2.3054 train_acc=0.6730
+  [module 0][train_mlp]   val_score=0.0880 (best=0.1000)
+  [module 0][train_mlp] epoch 24/50 loss=2.7070 train_acc=0.6580
+  [module 0][train_mlp]   val_score=0.1000 (best=0.1000)
+  [module 0][train_mlp] epoch 25/50 loss=1.8564 train_acc=0.7170
+  [module 0][train_mlp]   val_score=0.1060 (best=0.1060)
+  [module 0][train_mlp] epoch 26/50 loss=2.1539 train_acc=0.7480
+  [module 0][train_mlp]   val_score=0.1060 (best=0.1060)
+  [module 0][train_mlp] epoch 27/50 loss=2.2450 train_acc=0.7880
+  [module 0][train_mlp]   val_score=0.0860 (best=0.1060)
+  [module 0][train_mlp] epoch 28/50 loss=1.9433 train_acc=0.8140
+  [module 0][train_mlp]   val_score=0.0880 (best=0.1060)
+  [module 0][train_mlp] epoch 29/50 loss=1.3047 train_acc=0.8240
+  [module 0][train_mlp]   val_score=0.0960 (best=0.1060)
+  [module 0][train_mlp] epoch 30/50 loss=1.6245 train_acc=0.8450
+  [module 0][train_mlp]   val_score=0.1020 (best=0.1060)
+  [module 0][train_mlp] epoch 31/50 loss=2.0493 train_acc=0.8450
+  [module 0][train_mlp]   val_score=0.0940 (best=0.1060)
+  [module 0][train_mlp] epoch 32/50 loss=1.2612 train_acc=0.8610
+  [module 0][train_mlp]   val_score=0.1000 (best=0.1060)
+  [module 0][train_mlp] epoch 33/50 loss=1.3914 train_acc=0.8900
+  [module 0][train_mlp]   val_score=0.1080 (best=0.1080)
+  [module 0][train_mlp] epoch 34/50 loss=1.8190 train_acc=0.9010
+  [module 0][train_mlp]   val_score=0.1020 (best=0.1080)
+  [module 0][train_mlp] epoch 35/50 loss=1.0128 train_acc=0.9140
+  [module 0][train_mlp]   val_score=0.1000 (best=0.1080)
+  [module 0][train_mlp] epoch 36/50 loss=0.6400 train_acc=0.9170
+  [module 0][train_mlp]   val_score=0.1020 (best=0.1080)
+  [module 0][train_mlp] epoch 37/50 loss=1.0394 train_acc=0.9260
+  [module 0][train_mlp]   val_score=0.1060 (best=0.1080)
+  [module 0][train_mlp] epoch 38/50 loss=0.7868 train_acc=0.9430
+  [module 0][train_mlp]   val_score=0.1100 (best=0.1100)
+  [module 0][train_mlp] epoch 39/50 loss=1.0901 train_acc=0.9390
+  [module 0][train_mlp]   val_score=0.1000 (best=0.1100)
+  [module 0][train_mlp] epoch 40/50 loss=0.7745 train_acc=0.9540
+  [module 0][train_mlp]   val_score=0.1120 (best=0.1120)
+  [module 0][train_mlp] epoch 41/50 loss=1.2382 train_acc=0.9510
+  [module 0][train_mlp]   val_score=0.0960 (best=0.1120)
+  [module 0][train_mlp] epoch 42/50 loss=0.8950 train_acc=0.9560
+  [module 0][train_mlp]   val_score=0.1080 (best=0.1120)
+  [module 0][train_mlp] epoch 43/50 loss=0.7337 train_acc=0.9620
+  [module 0][train_mlp]   val_score=0.1060 (best=0.1120)
+  [module 0][train_mlp] epoch 44/50 loss=0.6196 train_acc=0.9630
+  [module 0][train_mlp]   val_score=0.1160 (best=0.1160)
+  [module 0][train_mlp] epoch 45/50 loss=0.7181 train_acc=0.9790
+  [module 0][train_mlp]   val_score=0.1120 (best=0.1160)
+  [module 0][train_mlp] epoch 46/50 loss=0.7767 train_acc=0.9730
+  [module 0][train_mlp]   val_score=0.1040 (best=0.1160)
+  [module 0][train_mlp] epoch 47/50 loss=0.5717 train_acc=0.9790
+  [module 0][train_mlp]   val_score=0.1120 (best=0.1160)
+  [module 0][train_mlp] epoch 48/50 loss=0.7488 train_acc=0.9790
+  [module 0][train_mlp]   val_score=0.1060 (best=0.1160)
+  [module 0][train_mlp] epoch 49/50 loss=0.6588 train_acc=0.9870
+  [module 0][train_mlp]   val_score=0.1100 (best=0.1160)
+  [module 0][train_mlp] epoch 50/50 loss=0.2848 train_acc=0.9830
+  [module 0][train_mlp]   val_score=0.1060 (best=0.1160)
+  [module 0][train_mlp] 早停：恢复 epoch 44 的最优权重 (score=0.1160)
+[run_mlp] module 0: places=500 samples=1000 updates=1600 final_train_acc=0.9830
+[run_mlp] Recall@K = {1: 0.558, 5: 0.812, 10: 0.878, 15: 0.906, 20: 0.92, 25: 0.922}
+[run_mlp] cost = {'train_wall_s': 306.05, 'n_weight_updates': 1600, 'eval_wall_s': 2.17, 'inference_latency_ms_per_query': 1.721, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 2013312, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0long_500_28/seed_1/mlp_m0long_500_28__seed1__mlp.json
+=== mlp_m0long_500_28 seed 2 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0long_500_28 variant=m0long seed=2 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/50 loss=6.2253 train_acc=0.0000
+  [module 0][train_mlp]   val_score=0.0080 (best=0.0080)
+  [module 0][train_mlp] epoch 2/50 loss=6.2033 train_acc=0.0040
+  [module 0][train_mlp]   val_score=0.0020 (best=0.0080)
+  [module 0][train_mlp] epoch 3/50 loss=6.2076 train_acc=0.0040
+  [module 0][train_mlp]   val_score=0.0060 (best=0.0080)
+  [module 0][train_mlp] epoch 4/50 loss=6.1441 train_acc=0.0140
+  [module 0][train_mlp]   val_score=0.0060 (best=0.0080)
+  [module 0][train_mlp] epoch 5/50 loss=6.1797 train_acc=0.0120
+  [module 0][train_mlp]   val_score=0.0160 (best=0.0160)
+  [module 0][train_mlp] epoch 6/50 loss=6.0388 train_acc=0.0240
+  [module 0][train_mlp]   val_score=0.0100 (best=0.0160)
+  [module 0][train_mlp] epoch 7/50 loss=5.8871 train_acc=0.0360
+  [module 0][train_mlp]   val_score=0.0120 (best=0.0160)
+  [module 0][train_mlp] epoch 8/50 loss=5.6734 train_acc=0.0580
+  [module 0][train_mlp]   val_score=0.0160 (best=0.0160)
+  [module 0][train_mlp] epoch 9/50 loss=5.6235 train_acc=0.0960
+  [module 0][train_mlp]   val_score=0.0200 (best=0.0200)
+  [module 0][train_mlp] epoch 10/50 loss=5.0852 train_acc=0.1050
+  [module 0][train_mlp]   val_score=0.0260 (best=0.0260)
+  [module 0][train_mlp] epoch 11/50 loss=5.2700 train_acc=0.1270
+  [module 0][train_mlp]   val_score=0.0340 (best=0.0340)
+  [module 0][train_mlp] epoch 12/50 loss=5.4865 train_acc=0.1790
+  [module 0][train_mlp]   val_score=0.0460 (best=0.0460)
+  [module 0][train_mlp] epoch 13/50 loss=4.7506 train_acc=0.2300
+  [module 0][train_mlp]   val_score=0.0540 (best=0.0540)
+  [module 0][train_mlp] epoch 14/50 loss=4.2048 train_acc=0.2670
+  [module 0][train_mlp]   val_score=0.0640 (best=0.0640)
+  [module 0][train_mlp] epoch 15/50 loss=4.2297 train_acc=0.2930
+  [module 0][train_mlp]   val_score=0.0440 (best=0.0640)
+  [module 0][train_mlp] epoch 16/50 loss=4.2982 train_acc=0.3410
+  [module 0][train_mlp]   val_score=0.0540 (best=0.0640)
+  [module 0][train_mlp] epoch 17/50 loss=4.3060 train_acc=0.3940
+  [module 0][train_mlp]   val_score=0.0600 (best=0.0640)
+  [module 0][train_mlp] epoch 18/50 loss=4.2458 train_acc=0.4310
+  [module 0][train_mlp]   val_score=0.0700 (best=0.0700)
+  [module 0][train_mlp] epoch 19/50 loss=3.2992 train_acc=0.4840
+  [module 0][train_mlp]   val_score=0.0780 (best=0.0780)
+  [module 0][train_mlp] epoch 20/50 loss=3.0010 train_acc=0.5430
+  [module 0][train_mlp]   val_score=0.0760 (best=0.0780)
+  [module 0][train_mlp] epoch 21/50 loss=3.8314 train_acc=0.5630
+  [module 0][train_mlp]   val_score=0.0820 (best=0.0820)
+  [module 0][train_mlp] epoch 22/50 loss=3.1534 train_acc=0.5620
+  [module 0][train_mlp]   val_score=0.0660 (best=0.0820)
+  [module 0][train_mlp] epoch 23/50 loss=2.0194 train_acc=0.6280
+  [module 0][train_mlp]   val_score=0.0740 (best=0.0820)
+  [module 0][train_mlp] epoch 24/50 loss=2.2833 train_acc=0.6580
+  [module 0][train_mlp]   val_score=0.0700 (best=0.0820)
+  [module 0][train_mlp] epoch 25/50 loss=3.0159 train_acc=0.6750
+  [module 0][train_mlp]   val_score=0.0840 (best=0.0840)
+  [module 0][train_mlp] epoch 26/50 loss=1.9820 train_acc=0.6990
+  [module 0][train_mlp]   val_score=0.0760 (best=0.0840)
+  [module 0][train_mlp] epoch 27/50 loss=1.7828 train_acc=0.7360
+  [module 0][train_mlp]   val_score=0.0800 (best=0.0840)
+  [module 0][train_mlp] epoch 28/50 loss=2.5294 train_acc=0.7690
+  [module 0][train_mlp]   val_score=0.0820 (best=0.0840)
+  [module 0][train_mlp] epoch 29/50 loss=1.9955 train_acc=0.7670
+  [module 0][train_mlp]   val_score=0.0820 (best=0.0840)
+  [module 0][train_mlp] epoch 30/50 loss=1.2208 train_acc=0.7830
+  [module 0][train_mlp]   val_score=0.0840 (best=0.0840)
+  [module 0][train_mlp] epoch 31/50 loss=1.9449 train_acc=0.8230
+  [module 0][train_mlp]   val_score=0.0980 (best=0.0980)
+  [module 0][train_mlp] epoch 32/50 loss=1.2843 train_acc=0.8400
+  [module 0][train_mlp]   val_score=0.0860 (best=0.0980)
+  [module 0][train_mlp] epoch 33/50 loss=1.2747 train_acc=0.8640
+  [module 0][train_mlp]   val_score=0.0900 (best=0.0980)
+  [module 0][train_mlp] epoch 34/50 loss=1.3600 train_acc=0.8620
+  [module 0][train_mlp]   val_score=0.1040 (best=0.1040)
+  [module 0][train_mlp] epoch 35/50 loss=1.4160 train_acc=0.8620
+  [module 0][train_mlp]   val_score=0.0960 (best=0.1040)
+  [module 0][train_mlp] epoch 36/50 loss=1.5303 train_acc=0.8980
+  [module 0][train_mlp]   val_score=0.0860 (best=0.1040)
+  [module 0][train_mlp] epoch 37/50 loss=0.7016 train_acc=0.9160
+  [module 0][train_mlp]   val_score=0.1060 (best=0.1060)
+  [module 0][train_mlp] epoch 38/50 loss=0.8575 train_acc=0.9180
+  [module 0][train_mlp]   val_score=0.0900 (best=0.1060)
+  [module 0][train_mlp] epoch 39/50 loss=1.0990 train_acc=0.9320
+  [module 0][train_mlp]   val_score=0.0900 (best=0.1060)
+  [module 0][train_mlp] epoch 40/50 loss=0.9866 train_acc=0.9230
+  [module 0][train_mlp]   val_score=0.0880 (best=0.1060)
+  [module 0][train_mlp] epoch 41/50 loss=1.2117 train_acc=0.9280
+  [module 0][train_mlp]   val_score=0.0900 (best=0.1060)
+  [module 0][train_mlp] epoch 42/50 loss=0.8961 train_acc=0.9470
+  [module 0][train_mlp]   val_score=0.0840 (best=0.1060)
+  [module 0][train_mlp] epoch 43/50 loss=0.9154 train_acc=0.9580
+  [module 0][train_mlp]   val_score=0.0900 (best=0.1060)
+  [module 0][train_mlp] epoch 44/50 loss=0.9894 train_acc=0.9600
+  [module 0][train_mlp]   val_score=0.0780 (best=0.1060)
+  [module 0][train_mlp] epoch 45/50 loss=0.7704 train_acc=0.9520
+  [module 0][train_mlp]   val_score=0.0820 (best=0.1060)
+  [module 0][train_mlp] epoch 46/50 loss=0.8627 train_acc=0.9660
+  [module 0][train_mlp]   val_score=0.0960 (best=0.1060)
+  [module 0][train_mlp] epoch 47/50 loss=0.6504 train_acc=0.9630
+  [module 0][train_mlp]   val_score=0.0940 (best=0.1060)
+  [module 0][train_mlp] epoch 48/50 loss=0.5903 train_acc=0.9740
+  [module 0][train_mlp]   val_score=0.0840 (best=0.1060)
+  [module 0][train_mlp] epoch 49/50 loss=0.9564 train_acc=0.9750
+  [module 0][train_mlp]   val_score=0.1000 (best=0.1060)
+  [module 0][train_mlp] epoch 50/50 loss=0.9502 train_acc=0.9710
+  [module 0][train_mlp]   val_score=0.1060 (best=0.1060)
+  [module 0][train_mlp] 早停：恢复 epoch 37 的最优权重 (score=0.1060)
+[run_mlp] module 0: places=500 samples=1000 updates=1600 final_train_acc=0.9710
+[run_mlp] Recall@K = {1: 0.53, 5: 0.78, 10: 0.866, 15: 0.902, 20: 0.922, 25: 0.942}
+[run_mlp] cost = {'train_wall_s': 325.6, 'n_weight_updates': 1600, 'eval_wall_s': 2.2, 'inference_latency_ms_per_query': 0.351, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 2013312, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0long_500_28/seed_2/mlp_m0long_500_28__seed2__mlp.json
+=== mlp_m1_500_28 seed 0 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m1_500_28 variant=m1 seed=0 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.2313 train_acc=0.0000
+  [module 0][train_mlp] epoch 2/4 loss=6.2171 train_acc=0.0050
+  [module 0][train_mlp] epoch 3/4 loss=6.1557 train_acc=0.0150
+  [module 0][train_mlp] epoch 4/4 loss=6.0592 train_acc=0.0270
+[run_mlp] module 0: places=500 samples=1000 updates=128 final_train_acc=0.0270
+[run_mlp] Recall@K = {1: 0.062, 5: 0.146, 10: 0.228, 15: 0.272, 20: 0.338, 25: 0.374}
+[run_mlp] cost = {'train_wall_s': 17.59, 'n_weight_updates': 128, 'eval_wall_s': 1.98, 'inference_latency_ms_per_query': 2.246, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 1458889, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m1_500_28/seed_0/mlp_m1_500_28__seed0__mlp.json
+=== mlp_m1_500_28 seed 1 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m1_500_28 variant=m1 seed=1 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.2087 train_acc=0.0000
+  [module 0][train_mlp] epoch 2/4 loss=6.2283 train_acc=0.0030
+  [module 0][train_mlp] epoch 3/4 loss=6.1992 train_acc=0.0140
+  [module 0][train_mlp] epoch 4/4 loss=6.1669 train_acc=0.0240
+[run_mlp] module 0: places=500 samples=1000 updates=128 final_train_acc=0.0240
+[run_mlp] Recall@K = {1: 0.03, 5: 0.092, 10: 0.134, 15: 0.166, 20: 0.198, 25: 0.226}
+[run_mlp] cost = {'train_wall_s': 16.3, 'n_weight_updates': 128, 'eval_wall_s': 1.98, 'inference_latency_ms_per_query': 1.723, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 1459399, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m1_500_28/seed_1/mlp_m1_500_28__seed1__mlp.json
+=== mlp_m1_500_28 seed 2 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m1_500_28 variant=m1 seed=2 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.2223 train_acc=0.0000
+  [module 0][train_mlp] epoch 2/4 loss=6.1886 train_acc=0.0140
+  [module 0][train_mlp] epoch 3/4 loss=6.2326 train_acc=0.0080
+  [module 0][train_mlp] epoch 4/4 loss=6.1802 train_acc=0.0170
+[run_mlp] module 0: places=500 samples=1000 updates=128 final_train_acc=0.0170
+[run_mlp] Recall@K = {1: 0.014, 5: 0.07, 10: 0.104, 15: 0.148, 20: 0.18, 25: 0.208}
+[run_mlp] cost = {'train_wall_s': 17.08, 'n_weight_updates': 128, 'eval_wall_s': 2.04, 'inference_latency_ms_per_query': 2.476, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 1458675, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m1_500_28/seed_2/mlp_m1_500_28__seed2__mlp.json
+=== mlp_m2_500_28 seed 0 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m2_500_28 variant=m2 seed=0 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.6526 train_acc=0.0010
+  [module 0][train_mlp] epoch 2/4 loss=5.4963 train_acc=0.4820
+  [module 0][train_mlp] epoch 3/4 loss=4.6017 train_acc=0.9410
+  [module 0][train_mlp] epoch 4/4 loss=4.2031 train_acc=0.9990
+[run_mlp] module 0: places=500 samples=1000 updates=128 final_train_acc=0.9990
+[run_mlp] Recall@K = {1: 0.868, 5: 0.944, 10: 0.968, 15: 0.974, 20: 0.982, 25: 0.986}
+[run_mlp] cost = {'train_wall_s': 17.08, 'n_weight_updates': 128, 'eval_wall_s': 2.02, 'inference_latency_ms_per_query': 1.288, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 1458889, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m2_500_28/seed_0/mlp_m2_500_28__seed0__mlp.json
+=== mlp_m2_500_28 seed 1 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m2_500_28 variant=m2 seed=1 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=7.2621 train_acc=0.0000
+  [module 0][train_mlp] epoch 2/4 loss=5.7051 train_acc=0.5110
+  [module 0][train_mlp] epoch 3/4 loss=4.8599 train_acc=0.9400
+  [module 0][train_mlp] epoch 4/4 loss=4.1585 train_acc=0.9990
+[run_mlp] module 0: places=500 samples=1000 updates=128 final_train_acc=0.9990
+[run_mlp] Recall@K = {1: 0.878, 5: 0.958, 10: 0.984, 15: 0.988, 20: 0.988, 25: 0.99}
+[run_mlp] cost = {'train_wall_s': 14.9, 'n_weight_updates': 128, 'eval_wall_s': 2.01, 'inference_latency_ms_per_query': 1.965, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 1459399, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m2_500_28/seed_1/mlp_m2_500_28__seed1__mlp.json
+=== mlp_m2_500_28 seed 2 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m2_500_28 variant=m2 seed=2 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=7.0211 train_acc=0.0000
+  [module 0][train_mlp] epoch 2/4 loss=5.4478 train_acc=0.5150
+  [module 0][train_mlp] epoch 3/4 loss=4.8828 train_acc=0.9540
+  [module 0][train_mlp] epoch 4/4 loss=3.9856 train_acc=0.9980
+[run_mlp] module 0: places=500 samples=1000 updates=128 final_train_acc=0.9980
+[run_mlp] Recall@K = {1: 0.862, 5: 0.962, 10: 0.974, 15: 0.986, 20: 0.992, 25: 0.996}
+[run_mlp] cost = {'train_wall_s': 16.59, 'n_weight_updates': 128, 'eval_wall_s': 1.89, 'inference_latency_ms_per_query': 1.39, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 1458675, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m2_500_28/seed_2/mlp_m2_500_28__seed2__mlp.json
+=== mlp_m0b1_500_28 seed 0 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0b1_500_28 variant=m0 seed=0 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.2146 train_acc=0.0030
+  [module 0][train_mlp] epoch 2/4 loss=6.2146 train_acc=0.0070
+  [module 0][train_mlp] epoch 3/4 loss=6.2146 train_acc=0.0030
+  [module 0][train_mlp] epoch 4/4 loss=6.2146 train_acc=0.0070
+[run_mlp] module 0: places=500 samples=1000 updates=4000 final_train_acc=0.0070
+[run_mlp] Recall@K = {1: 0.006, 5: 0.018, 10: 0.028, 15: 0.038, 20: 0.048, 25: 0.062}
+[run_mlp] cost = {'train_wall_s': 66.97, 'n_weight_updates': 4000, 'eval_wall_s': 1.96, 'inference_latency_ms_per_query': 1.644, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 2013312, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0b1_500_28/seed_0/mlp_m0b1_500_28__seed0__mlp.json
+=== mlp_m0b1_500_28 seed 1 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0b1_500_28 variant=m0 seed=1 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.2280 train_acc=0.0010
+  [module 0][train_mlp] epoch 2/4 loss=6.2146 train_acc=0.0070
+  [module 0][train_mlp] epoch 3/4 loss=6.2146 train_acc=0.0050
+  [module 0][train_mlp] epoch 4/4 loss=6.2146 train_acc=0.0060
+[run_mlp] module 0: places=500 samples=1000 updates=4000 final_train_acc=0.0060
+[run_mlp] Recall@K = {1: 0.008, 5: 0.018, 10: 0.026, 15: 0.038, 20: 0.048, 25: 0.058}
+[run_mlp] cost = {'train_wall_s': 69.9, 'n_weight_updates': 4000, 'eval_wall_s': 1.94, 'inference_latency_ms_per_query': 1.014, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 2013312, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0b1_500_28/seed_1/mlp_m0b1_500_28__seed1__mlp.json
+=== mlp_m0b1_500_28 seed 2 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0b1_500_28 variant=m0 seed=2 query=summer device=cpu
+[run_mlp] in_dim=784 modules=1 ranges=[[0, 3992]]
+  [module 0][train_mlp] epoch 1/4 loss=6.2146 train_acc=0.0030
+  [module 0][train_mlp] epoch 2/4 loss=6.2146 train_acc=0.0120
+  [module 0][train_mlp] epoch 3/4 loss=6.2146 train_acc=0.0050
+  [module 0][train_mlp] epoch 4/4 loss=6.2146 train_acc=0.0070
+[run_mlp] module 0: places=500 samples=1000 updates=4000 final_train_acc=0.0070
+[run_mlp] Recall@K = {1: 0.01, 5: 0.02, 10: 0.032, 15: 0.046, 20: 0.056, 25: 0.066}
+[run_mlp] cost = {'train_wall_s': 67.79, 'n_weight_updates': 4000, 'eval_wall_s': 1.98, 'inference_latency_ms_per_query': 1.236, 'peak_gpu_mem_gb': None, 'total_params': 2013312, 'nonzero_params': 2013312, 'forward_flops_per_query': 4026624}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0b1_500_28/seed_2/mlp_m0b1_500_28__seed2__mlp.json
+ALL MLP RUNS DONE

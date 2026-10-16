@@ -66,7 +66,23 @@ def mean_std(vals):
     return f"{np.mean(vals):.3f}±{np.std(vals):.3f}"
 
 
-def arm_row(label, rows, is_snn):
+def snn_cost(exp_id, query_places):
+    """SNN 侧成本：eval 墙钟/查询数 → 单张延迟；训练墙钟（若日志可得）"""
+    rows = load_seed_results(exp_id, suffix="__eval")
+    lat_ms = [r["wall_time_s"] * 1000 / query_places for r in rows
+              if "wall_time_s" in r]
+    # 训练墙钟：b0_500_56 的 run_exp 日志（results/b0_500_56_progress.log）
+    train_min = []
+    log = RESULTS_DIR / f"{exp_id}_progress.log"
+    if log.exists():
+        import re
+        text = log.read_text(encoding="utf-8", errors="replace")
+        train_min = [float(m) / 60 for m in
+                     re.findall(r"train 完成，墙钟 ([\d.]+)s", text)]
+    return train_min, lat_ms
+
+
+def arm_row(label, rows, is_snn, exp_id=None, query_places=None):
     """生成一行的 Markdown 单元格"""
     if not rows:
         return f"| {label} | 缺失 |" + " — |" * (len(KS) + 4)
@@ -74,7 +90,10 @@ def arm_row(label, rows, is_snn):
                for r in rows if "recallAtK" in r] for K in KS}
     cells = [mean_std(rec[K]) for K in KS]
     if is_snn:
-        cost = ["—", "—", "—", "—", "—"]
+        train_min, lat_ms = snn_cost(exp_id, query_places)
+        cost = [(mean_std(train_min) + " min") if train_min else "—",
+                (mean_std(lat_ms) + " ms") if lat_ms else "—",
+                "—", "—", "—"]
     else:
         train_s = [r["cost"]["train_wall_s"] for r in rows if "cost" in r]
         lat = [r["cost"]["inference_latency_ms_per_query"] for r in rows if "cost" in r]
@@ -95,18 +114,24 @@ def main():
              "> 由 `experiments/make_mlp_table.py` 自动生成。",
              "> MLP 臂：训练=spring+fall，查询=summer；指标为 3 seeds mean±std。",
              "> 成本列：训练墙钟(min) / 单张查询延迟(ms) / 总参数 / 非零参数 / 单次前向FLOPs。",
-             "> SNN 基线的成本列留空（其训练/推理口径见 run_exp.py 归档日志）。",
+             "> SNN 延迟 = run_exp 归档 eval 墙钟/查询数；SNN 训练时间仅 b0_500_56 日志可得。",
+             "> 全部实验在 CPU 上运行（本机无 GPU）。",
              ""]
     header = ("| 实验臂 | n | R@1 | R@5 | R@10 | R@15 | R@20 | R@25 |"
               " 训练时间 | 延迟 | 参数 | 非零 | FLOPs |")
     sep = "|" + "---|" * 12
+    # 各组合查询数（SNN 延迟换算用）
+    group_nquery = {"A·500地·28×28": 500, "B·3300地·28×28": 2700,
+                    "C·500地·56×56": 500}
 
     for group, mlp_exps in MLP_GROUPS.items():
         lines += [f"\n## {group}", "", header, sep]
         snn_id = [k for k, v in SNN_BASELINES.items() if v == group]
         if snn_id:
             rows = load_seed_results(snn_id[0], suffix="__eval")
-            lines.append(arm_row(ARM_LABELS["b0"], rows, is_snn=True))
+            lines.append(arm_row(ARM_LABELS["b0"], rows, is_snn=True,
+                                 exp_id=snn_id[0],
+                                 query_places=group_nquery[group]))
         for exp in mlp_exps:
             variant = exp.split("_")[1]
             rows = load_seed_results(exp, suffix="__mlp")

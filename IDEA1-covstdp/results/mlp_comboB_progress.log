@@ -1,0 +1,147 @@
+=== mlp_m0_3300_28 seed 0 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0_3300_28 variant=m0 seed=0 query=summer device=cpu
+[run_mlp] in_dim=784 modules=3 ranges=[[0, 8792], [8800, 17592], [17600, 26392]]
+  [module 0][train_mlp] epoch 1/4 loss=7.0050 train_acc=0.0000
+  [module 0][train_mlp] epoch 2/4 loss=7.0088 train_acc=0.0005
+  [module 0][train_mlp] epoch 3/4 loss=6.9970 train_acc=0.0000
+  [module 0][train_mlp] epoch 4/4 loss=6.9922 train_acc=0.0009
+[run_mlp] module 0: places=1100 samples=2200 updates=276 final_train_acc=0.0009
+  [module 1][train_mlp] epoch 1/4 loss=7.0030 train_acc=0.0005
+  [module 1][train_mlp] epoch 2/4 loss=7.0106 train_acc=0.0014
+  [module 1][train_mlp] epoch 3/4 loss=7.0031 train_acc=0.0018
+  [module 1][train_mlp] epoch 4/4 loss=7.0031 train_acc=0.0009
+[run_mlp] module 1: places=1100 samples=2200 updates=276 final_train_acc=0.0009
+  [module 2][train_mlp] epoch 1/4 loss=7.0113 train_acc=0.0005
+  [module 2][train_mlp] epoch 2/4 loss=7.0063 train_acc=0.0018
+  [module 2][train_mlp] epoch 3/4 loss=7.0027 train_acc=0.0032
+  [module 2][train_mlp] epoch 4/4 loss=7.0031 train_acc=0.0009
+[run_mlp] module 2: places=1100 samples=2200 updates=276 final_train_acc=0.0009
+[run_mlp] Recall@K = {1: 0.00037037037037037035, 5: 0.0007407407407407407, 10: 0.0022222222222222222, 15: 0.0025925925925925925, 20: 0.002962962962962963, 25: 0.0033333333333333335}
+[run_mlp] cost = {'train_wall_s': 220.83, 'n_weight_updates': 828, 'eval_wall_s': 41.61, 'inference_latency_ms_per_query': 25.086, 'peak_gpu_mem_gb': None, 'total_params': 8862336, 'nonzero_params': 8862336, 'forward_flops_per_query': 17724672}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0_3300_28/seed_0/mlp_m0_3300_28__seed0__mlp.json
+=== mlp_m0_3300_28 seed 1 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0_3300_28 variant=m0 seed=1 query=summer device=cpu
+[run_mlp] in_dim=784 modules=3 ranges=[[0, 8792], [8800, 17592], [17600, 26392]]
+  [module 0][train_mlp] epoch 1/4 loss=7.0031 train_acc=0.0005
+  [module 0][train_mlp] epoch 2/4 loss=7.0027 train_acc=0.0005
+  [module 0][train_mlp] epoch 3/4 loss=6.9988 train_acc=0.0000
+  [module 0][train_mlp] epoch 4/4 loss=7.0027 train_acc=0.0009
+[run_mlp] module 0: places=1100 samples=2200 updates=276 final_train_acc=0.0009
+  [module 1][train_mlp] epoch 1/4 loss=7.0029 train_acc=0.0005
+  [module 1][train_mlp] epoch 2/4 loss=7.0034 train_acc=0.0009
+  [module 1][train_mlp] epoch 3/4 loss=7.0031 train_acc=0.0014
+  [module 1][train_mlp] epoch 4/4 loss=7.0031 train_acc=0.0009
+[run_mlp] module 1: places=1100 samples=2200 updates=276 final_train_acc=0.0009
+  [module 2][train_mlp] epoch 1/4 loss=7.0030 train_acc=0.0005
+  [module 2][train_mlp] epoch 2/4 loss=7.0000 train_acc=0.0014
+  [module 2][train_mlp] epoch 3/4 loss=7.0029 train_acc=0.0009
+  [module 2][train_mlp] epoch 4/4 loss=7.0031 train_acc=0.0018
+[run_mlp] module 2: places=1100 samples=2200 updates=276 final_train_acc=0.0018
+[run_mlp] Recall@K = {1: 0.00037037037037037035, 5: 0.0011111111111111111, 10: 0.001851851851851852, 15: 0.001851851851851852, 20: 0.0033333333333333335, 25: 0.004814814814814815}
+[run_mlp] cost = {'train_wall_s': 168.5, 'n_weight_updates': 828, 'eval_wall_s': 19.43, 'inference_latency_ms_per_query': 22.652, 'peak_gpu_mem_gb': None, 'total_params': 8862336, 'nonzero_params': 8862336, 'forward_flops_per_query': 17724672}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0_3300_28/seed_1/mlp_m0_3300_28__seed1__mlp.json
+=== mlp_m0_3300_28 seed 2 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0_3300_28 variant=m0 seed=2 query=summer device=cpu
+[run_mlp] in_dim=784 modules=3 ranges=[[0, 8792], [8800, 17592], [17600, 26392]]
+  [module 0][train_mlp] epoch 1/4 loss=7.0028 train_acc=0.0005
+  [module 0][train_mlp] epoch 2/4 loss=7.0000 train_acc=0.0009
+  [module 0][train_mlp] epoch 3/4 loss=7.0025 train_acc=0.0018
+  [module 0][train_mlp] epoch 4/4 loss=6.9853 train_acc=0.0014
+[run_mlp] module 0: places=1100 samples=2200 updates=276 final_train_acc=0.0014
+  [module 1][train_mlp] epoch 1/4 loss=7.0031 train_acc=0.0000
+  [module 1][train_mlp] epoch 2/4 loss=7.0029 train_acc=0.0009
+  [module 1][train_mlp] epoch 3/4 loss=7.0031 train_acc=0.0009
+  [module 1][train_mlp] epoch 4/4 loss=7.0031 train_acc=0.0009
+[run_mlp] module 1: places=1100 samples=2200 updates=276 final_train_acc=0.0009
+  [module 2][train_mlp] epoch 1/4 loss=7.0008 train_acc=0.0000
+  [module 2][train_mlp] epoch 2/4 loss=7.0055 train_acc=0.0014
+  [module 2][train_mlp] epoch 3/4 loss=7.0005 train_acc=0.0018
+  [module 2][train_mlp] epoch 4/4 loss=7.0031 train_acc=0.0009
+[run_mlp] module 2: places=1100 samples=2200 updates=276 final_train_acc=0.0009
+[run_mlp] Recall@K = {1: 0.00037037037037037035, 5: 0.001851851851851852, 10: 0.0022222222222222222, 15: 0.002962962962962963, 20: 0.0033333333333333335, 25: 0.0033333333333333335}
+[run_mlp] cost = {'train_wall_s': 161.32, 'n_weight_updates': 828, 'eval_wall_s': 16.21, 'inference_latency_ms_per_query': 6.797, 'peak_gpu_mem_gb': None, 'total_params': 8862336, 'nonzero_params': 8862336, 'forward_flops_per_query': 17724672}
+[run_mlp] 结果已写入 /home/ubuntu/projects/VPRTempo/IDEA1-covstdp/results/mlp_m0_3300_28/seed_2/mlp_m0_3300_28__seed2__mlp.json
+=== mlp_m0long_3300_28 seed 0 ===
+ WARN Encountered 1 warning while parsing the manifest:
+  ⚠ The `project` field is deprecated. Use `workspace` instead.
+   ╭─[/home/ubuntu/projects/VPRTempo/pixi.toml:1:1]
+ 1 │ ╭─▶ [project]
+ 2 │ │   name = "vprtempo"
+ 3 │ │   version = "1.1.10"
+ 4 │ │   description = "Temporally encoded spiking neural network for fast visual place recognition"
+ 5 │ │   authors = ["Adam D Hines <adam.hines@qut.edu.au>", "Peter G Stratton <pete@neurofire.ai>", "Michael Milford <michael.milford@qut.edu.au", "Tobias Fischer <tobias.fischer@qut.edu.au>"]
+ 6 │ │   channels = ["conda-forge", "pytorch"]
+ 7 │ │   platforms = ["linux-64", "osx-arm64", "win-64"]
+ 8 │ ├─▶ preview = ["pixi-build"]
+   · ╰──── replace this with 'workspace'
+ 9 │     
+   ╰────
+
+ WARN the lock file is up-to-date but uses an older format (v6), run `pixi lock` to upgrade to v7 for improved reproducibility
+[run_mlp] exp=mlp_m0long_3300_28 variant=m0long seed=0 query=summer device=cpu
+[run_mlp] in_dim=784 modules=3 ranges=[[0, 8792], [8800, 17592], [17600, 26392]]
+  [module 0][train_mlp] epoch 1/50 loss=7.0050 train_acc=0.0000
+Traceback (most recent call last):
+  File "/home/ubuntu/projects/VPRTempo/IDEA1-covstdp/experiments/run_mlp.py", line 303, in <module>
+    main()
+  File "/home/ubuntu/projects/VPRTempo/IDEA1-covstdp/experiments/run_mlp.py", line 220, in main
+    acc_hist, n_upd, best_ep = train_mlp(
+                               ^^^^^^^^^^
+  File "/home/ubuntu/projects/VPRTempo/IDEA1-covstdp/src/mlp_baseline.py", line 210, in train_mlp
+    score = eval_callback(model)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/projects/VPRTempo/IDEA1-covstdp/experiments/run_mlp.py", line 214, in eval_cb
+    GT = build_ground_truth(covered, S.shape[1],
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/projects/VPRTempo/vprtempo/src/gt.py", line 57, in build_ground_truth
+    GT[skip_frames + query_indices, query_indices] = 1
+    ~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: index 1100 is out of bounds for axis 0 with size 1100
