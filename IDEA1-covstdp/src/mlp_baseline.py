@@ -91,7 +91,15 @@ def blitnet_init_(weight, p_exc=0.1, p_inh=0.5, seed=0):
 
 
 # ================================================================================
-# MLPBaseline — 同构 MLP：Linear(in, 2·in) → ReLU → Linear(2·in, n_places)
+# MLPBaseline — 同构 MLP：Linear(in, 2·in) → LeakyReLU → Linear(2·in, n_places)
+# ================================================================================
+# 【激活函数设计决定（2026-10-16 诊断确认）】
+# 输出类数较大（≥500）时，标准 ReLU 在 BP 下发生大规模神经元死亡：
+# 1100 类时 ep1 死神经元比例即达 99.2%，loss 恒为 ln(1100)，训练完全停滞
+# （500 类时处于死亡边缘——部分 seed 碰巧存活、部分死亡，方差是假象）。
+# 因此所有臂统一使用 LeakyReLU(0.01)——给 BP 侧标准、稳定的训练条件，
+# 使对比聚焦于学习规则而非激活函数的病理。对照实验（diag）证实 LeakyReLU
+# 后 1100 类 15 epoch train_acc 即达 0.80。
 # ================================================================================
 class MLPBaseline(nn.Module):
     """与 VPRTempo 单模块同维度的两层 MLP。
@@ -150,7 +158,7 @@ class MLPBaseline(nn.Module):
 
     def forward(self, x):
         self.apply_mask()
-        h = torch.relu(self.feature(x))
+        h = torch.nn.functional.leaky_relu(self.feature(x), negative_slope=0.01)
         return self.readout(h)
 
     # ---- 成本计量辅助 ----

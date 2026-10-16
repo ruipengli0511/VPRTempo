@@ -60,7 +60,7 @@ def main():
     nz_md = float((m_md.feature.weight != 0).float().mean())
     check("masked_default 非零率", abs(nz_md - density) < 1e-6, f"nonzero={nz_md:.4f}")
     with torch.no_grad():
-        h_md = torch.relu(m_md.feature(torch.rand(8, in_dim)))
+        h_md = torch.nn.functional.leaky_relu(m_md.feature(torch.rand(8, in_dim)), 0.01)
     check("masked_default 前层不死亡", float((h_md > 0).float().mean()) > 0.1,
           f"frac_pos={float((h_md > 0).float().mean()):.3f}")
 
