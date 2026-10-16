@@ -27,14 +27,15 @@ SNN_BASELINES = {
 }
 # MLP 臂 → 规模×口径标签
 MLP_GROUPS = {
-    "A·500地·28×28": ["mlp_m0_500_28", "mlp_m0long_500_28",
+    "A·500地·28×28": ["mlp_m0_500_28", "mlp_m0b1_500_28", "mlp_m0long_500_28",
                     "mlp_m1_500_28", "mlp_m2_500_28"],
     "B·3300地·28×28": ["mlp_m0_3300_28", "mlp_m0long_3300_28",
                       "mlp_m1_3300_28", "mlp_m2_3300_28"],
     "C·500地·56×56": ["mlp_m0_500_56", "mlp_m0long_500_56",
                      "mlp_m1_500_56", "mlp_m2_500_56"],
 }
-ARM_LABELS = {"m0": "M0 稠密MLP", "m0long": "M0-long 充分训练",
+ARM_LABELS = {"m0": "M0 稠密MLP(4ep)", "m0b1": "M0-b1 稠密MLP(batch=1,等更新数)",
+              "m0long": "M0-long 充分训练",
               "m1": "M1 稀疏MLP(同拓扑)", "m2": "M2 冻特征+读出",
               "b0": "B0 SNN (VPRTempo)"}
 KS = [1, 5, 10, 15, 20, 25]

@@ -197,11 +197,13 @@ def main():
 
         # M0-long：winter 验证集早停。每 epoch 末用"已训模块 + 当前模块"
         # 在 winter 上算 R@1（GT 只覆盖已训地点；recallAtK 自动丢弃无匹配查询列）。
+        # winter 仅作调参信号，与正式 eval 的 query_skip 无关——数据集与 GT 一律 skip=0
         eval_cb = None
         winter_ds = None
         if variant == "m0long":
             if winter_ds is None:
-                winter_ds = make_query_dataset(cfg, transform, "winter",
+                cfg_winter = dict(cfg, query_skip=0)
+                winter_ds = make_query_dataset(cfg_winter, transform, "winter",
                                                max_samples=cfg["query_places"])
             from vprtempo.src.gt import build_ground_truth
             from vprtempo.src.metrics import recallAtK
@@ -212,7 +214,7 @@ def main():
                 logits = query_logits(cand, winter_ds, device)
                 S = logits.numpy().T
                 GT = build_ground_truth(covered, S.shape[1],
-                                        skip=cfg.get("query_skip", cfg["skip"]),
+                                        skip=0,
                                         filter=filter_,
                                         tolerance=cfg["GT_tolerance"])
                 return recallAtK(S, GT, K=1)
