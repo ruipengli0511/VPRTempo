@@ -1,0 +1,2155 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "generated_at": "2026-11-08T16:54:04.263409+08:00",
+  "purpose": "P0 short forward acceptance only; no training or threshold update",
+  "repository": {
+    "path": "/home/ubuntu/projects/VPRTempo",
+    "branch": "feat/mlp-baseline",
+    "head": "d7a4ff34547821588c1023cedc180ee65375e6bc"
+  },
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.10.0",
+    "torchvision": "0.26.0",
+    "device": "cpu",
+    "cuda_available": false,
+    "executable": "/home/ubuntu/projects/VPRTempo/.pixi/envs/default/bin/python"
+  },
+  "config": {
+    "source": "/home/ubuntu/projects/VPRTempo/IDEA1-covstdp/phase2/configs/b5_500.json",
+    "effective": {
+      "dataset": "nordland",
+      "data_dir": "/mnt/d/Data/datasets/vpr/Nordland",
+      "database_places": 500,
+      "query_places": 500,
+      "max_module": 500,
+      "database_dirs": "spring,fall",
+      "query_dir": "summer",
+      "GT_tolerance": 0,
+      "skip": 0,
+      "filter": 8,
+      "epoch": 4,
+      "patches": 7,
+      "dims": "28,28",
+      "train_new_model": false,
+      "quantize": false,
+      "model_name": null,
+      "PR_curve": true,
+      "sim_mat": false,
+      "run_demo": false,
+      "exp_id": "b5_500",
+      "seed": 0,
+      "patch_norm": "on",
+      "frontend": "gabor",
+      "wta_mode": "local",
+      "wta_block": 4,
+      "agg_mode": "mean",
+      "pre_mode": "centered",
+      "conv_channels": 32,
+      "conv_kernel": 5,
+      "conv_epoch": 2
+    },
+    "model_name_used": "b5_500__seed0.pth"
+  },
+  "checkpoint": {
+    "path": "/home/ubuntu/projects/VPRTempo/vprtempo/models/b5_500__seed0.pth",
+    "sha256": "2f6d8736a5762608f4d0fd6428dd9a35aa57223d3fbcbf716f6349a501c3b6be",
+    "loaded_with_weights_only": true,
+    "modules": 1,
+    "checkpoint_modified": false
+  },
+  "sampling": {
+    "rule": "eight evenly spaced, fixed place IDs from the existing 500-place development configuration",
+    "place_ids": [
+      0,
+      71,
+      142,
+      213,
+      284,
+      355,
+      426,
+      499
+    ],
+    "reference_seasons": [
+      "spring",
+      "fall"
+    ],
+    "development_query_season": "summer",
+    "winter_images_opened": false,
+    "independent_final_query_opened": false
+  },
+  "samples": [
+    {
+      "place_id": 0,
+      "seasons": {
+        "spring": {
+          "role": "training_reference",
+          "dataset_index": 0,
+          "raw_csv_zero_based_row": 0,
+          "label": 0,
+          "file_name": "images-00202.png",
+          "relative_to_data_dir": "spring/images-00202.png",
+          "file_readable": true
+        },
+        "fall": {
+          "role": "training_reference",
+          "dataset_index": 0,
+          "raw_csv_zero_based_row": 0,
+          "label": 0,
+          "file_name": "images-00202.png",
+          "relative_to_data_dir": "fall/images-00202.png",
+          "file_readable": true
+        },
+        "summer": {
+          "role": "development_query",
+          "dataset_index": 0,
+          "raw_csv_zero_based_row": 0,
+          "label": 0,
+          "file_name": "images-00202.png",
+          "relative_to_data_dir": "summer/images-00202.png",
+          "file_readable": true
+        }
+      }
+    },
+    {
+      "place_id": 71,
+      "seasons": {
+        "spring": {
+          "role": "training_reference",
+          "dataset_index": 71,
+          "raw_csv_zero_based_row": 568,
+          "label": 568,
+          "file_name": "images-00770.png",
+          "relative_to_data_dir": "spring/images-00770.png",
+          "file_readable": true
+        },
+        "fall": {
+          "role": "training_reference",
+          "dataset_index": 71,
+          "raw_csv_zero_based_row": 568,
+          "label": 568,
+          "file_name": "images-00770.png",
+          "relative_to_data_dir": "fall/images-00770.png",
+          "file_readable": true
+        },
+        "summer": {
+          "role": "development_query",
+          "dataset_index": 71,
+          "raw_csv_zero_based_row": 568,
+          "label": 568,
+          "file_name": "images-00770.png",
+          "relative_to_data_dir": "summer/images-00770.png",
+          "file_readable": true
+        }
+      }
+    },
+    {
+      "place_id": 142,
+      "seasons": {
+        "spring": {
+          "role": "training_reference",
+          "dataset_index": 142,
+          "raw_csv_zero_based_row": 1136,
+          "label": 1136,
+          "file_name": "images-02047.png",
+          "relative_to_data_dir": "spring/images-02047.png",
+          "file_readable": true
+        },
+        "fall": {
+          "role": "training_reference",
+          "dataset_index": 142,
+          "raw_csv_zero_based_row": 1136,
+          "label": 1136,
+          "file_name": "images-02047.png",
+          "relative_to_data_dir": "fall/images-02047.png",
+          "file_readable": true
+        },
+        "summer": {
+          "role": "development_query",
+          "dataset_index": 142,
+          "raw_csv_zero_based_row": 1136,
+          "label": 1136,
+          "file_name": "images-02047.png",
+          "relative_to_data_dir": "summer/images-02047.png",
+          "file_readable": true
+        }
+      }
+    },
+    {
+      "place_id": 213,
+      "seasons": {
+        "spring": {
+          "role": "training_reference",
+          "dataset_index": 213,
+          "raw_csv_zero_based_row": 1704,
+          "label": 1704,
+          "file_name": "images-02965.png",
+          "relative_to_data_dir": "spring/images-02965.png",
+          "file_readable": true
+        },
+        "fall": {
+          "role": "training_reference",
+          "dataset_index": 213,
+          "raw_csv_zero_based_row": 1704,
+          "label": 1704,
+          "file_name": "images-02965.png",
+          "relative_to_data_dir": "fall/images-02965.png",
+          "file_readable": true
+        },
+        "summer": {
+          "role": "development_query",
+          "dataset_index": 213,
+          "raw_csv_zero_based_row": 1704,
+          "label": 1704,
+          "file_name": "images-02965.png",
+          "relative_to_data_dir": "summer/images-02965.png",
+          "file_readable": true
+        }
+      }
+    },
+    {
+      "place_id": 284,
+      "seasons": {
+        "spring": {
+          "role": "training_reference",
+          "dataset_index": 284,
+          "raw_csv_zero_based_row": 2272,
+          "label": 2272,
+          "file_name": "images-03847.png",
+          "relative_to_data_dir": "spring/images-03847.png",
+          "file_readable": true
+        },
+        "fall": {
+          "role": "training_reference",
+          "dataset_index": 284,
+          "raw_csv_zero_based_row": 2272,
+          "label": 2272,
+          "file_name": "images-03847.png",
+          "relative_to_data_dir": "fall/images-03847.png",
+          "file_readable": true
+        },
+        "summer": {
+          "role": "development_query",
+          "dataset_index": 284,
+          "raw_csv_zero_based_row": 2272,
+          "label": 2272,
+          "file_name": "images-03847.png",
+          "relative_to_data_dir": "summer/images-03847.png",
+          "file_readable": true
+        }
+      }
+    },
+    {
+      "place_id": 355,
+      "seasons": {
+        "spring": {
+          "role": "training_reference",
+          "dataset_index": 355,
+          "raw_csv_zero_based_row": 2840,
+          "label": 2840,
+          "file_name": "images-04419.png",
+          "relative_to_data_dir": "spring/images-04419.png",
+          "file_readable": true
+        },
+        "fall": {
+          "role": "training_reference",
+          "dataset_index": 355,
+          "raw_csv_zero_based_row": 2840,
+          "label": 2840,
+          "file_name": "images-04419.png",
+          "relative_to_data_dir": "fall/images-04419.png",
+          "file_readable": true
+        },
+        "summer": {
+          "role": "development_query",
+          "dataset_index": 355,
+          "raw_csv_zero_based_row": 2840,
+          "label": 2840,
+          "file_name": "images-04419.png",
+          "relative_to_data_dir": "summer/images-04419.png",
+          "file_readable": true
+        }
+      }
+    },
+    {
+      "place_id": 426,
+      "seasons": {
+        "spring": {
+          "role": "training_reference",
+          "dataset_index": 426,
+          "raw_csv_zero_based_row": 3408,
+          "label": 3408,
+          "file_name": "images-04987.png",
+          "relative_to_data_dir": "spring/images-04987.png",
+          "file_readable": true
+        },
+        "fall": {
+          "role": "training_reference",
+          "dataset_index": 426,
+          "raw_csv_zero_based_row": 3408,
+          "label": 3408,
+          "file_name": "images-04987.png",
+          "relative_to_data_dir": "fall/images-04987.png",
+          "file_readable": true
+        },
+        "summer": {
+          "role": "development_query",
+          "dataset_index": 426,
+          "raw_csv_zero_based_row": 3408,
+          "label": 3408,
+          "file_name": "images-04987.png",
+          "relative_to_data_dir": "summer/images-04987.png",
+          "file_readable": true
+        }
+      }
+    },
+    {
+      "place_id": 499,
+      "seasons": {
+        "spring": {
+          "role": "training_reference",
+          "dataset_index": 499,
+          "raw_csv_zero_based_row": 3992,
+          "label": 3992,
+          "file_name": "images-06009.png",
+          "relative_to_data_dir": "spring/images-06009.png",
+          "file_readable": true
+        },
+        "fall": {
+          "role": "training_reference",
+          "dataset_index": 499,
+          "raw_csv_zero_based_row": 3992,
+          "label": 3992,
+          "file_name": "images-06009.png",
+          "relative_to_data_dir": "fall/images-06009.png",
+          "file_readable": true
+        },
+        "summer": {
+          "role": "development_query",
+          "dataset_index": 499,
+          "raw_csv_zero_based_row": 3992,
+          "label": 3992,
+          "file_name": "images-06009.png",
+          "relative_to_data_dir": "summer/images-06009.png",
+          "file_readable": true
+        }
+      }
+    }
+  ],
+  "forward_contract": {
+    "reference_and_query_same_transform_and_encoder": true,
+    "track_b_conv_bypasses_feature_and_output": true,
+    "track_b_feature_applies_linear_then_threshold_clamp": true,
+    "track_a_output_uses_feature_raw_without_threshold_clamp": true,
+    "batch_size": 1
+  },
+  "shapes_from_one_sample": {
+    "spikes": [
+      1,
+      784
+    ],
+    "conv_pre_wta": [
+      1,
+      32,
+      24,
+      24
+    ],
+    "conv_post_wta": [
+      1,
+      32,
+      24,
+      24
+    ],
+    "conv": [
+      1,
+      1152
+    ],
+    "feature_raw": [
+      1,
+      2304
+    ],
+    "feature": [
+      1,
+      2304
+    ],
+    "track_a_output": [
+      1,
+      500
+    ]
+  },
+  "repeat_same_image": {
+    "spikes": {
+      "equal": true,
+      "max_abs_diff": 0.0
+    },
+    "conv_pre_wta": {
+      "equal": true,
+      "max_abs_diff": 0.0
+    },
+    "conv_post_wta": {
+      "equal": true,
+      "max_abs_diff": 0.0
+    },
+    "conv": {
+      "equal": true,
+      "max_abs_diff": 0.0
+    },
+    "feature_raw": {
+      "equal": true,
+      "max_abs_diff": 0.0
+    },
+    "feature": {
+      "equal": true,
+      "max_abs_diff": 0.0
+    },
+    "track_a_output": {
+      "equal": true,
+      "max_abs_diff": 0.0
+    }
+  },
+  "reverse_order": {
+    "all_samples_all_recorded_tensors_exactly_equal": true,
+    "tensor_names": [
+      "spikes",
+      "conv_pre_wta",
+      "conv_post_wta",
+      "conv",
+      "feature_raw",
+      "feature",
+      "track_a_output"
+    ]
+  },
+  "model_state_before_after": {
+    "all_equal": true,
+    "per_key": {
+      "conv_layer.havconnExc": {
+        "equal": true,
+        "changed_elements": 0,
+        "max_abs_diff": 0.0
+      },
+      "conv_layer.thr": {
+        "equal": true,
+        "changed_elements": 0,
+        "max_abs_diff": 0.0
+      },
+      "conv_layer.w.weight": {
+        "equal": true,
+        "changed_elements": 0,
+        "max_abs_diff": 0.0
+      },
+      "feature_layer.thr": {
+        "equal": true,
+        "changed_elements": 0,
+        "max_abs_diff": 0.0
+      },
+      "feature_layer.w.weight": {
+        "equal": true,
+        "changed_elements": 0,
+        "max_abs_diff": 0.0
+      },
+      "output_layer.thr": {
+        "equal": true,
+        "changed_elements": 0,
+        "max_abs_diff": 0.0
+      },
+      "output_layer.w.weight": {
+        "equal": true,
+        "changed_elements": 0,
+        "max_abs_diff": 0.0
+      }
+    }
+  },
+  "non_state_flags": {
+    "conv_frozen": true,
+    "conv_itp_on_frozen": true,
+    "inference_feature_has_x_state": false,
+    "inference_feature_has_eta_ip": false
+  },
+  "validity": {
+    "all_sample_tensors_finite": true,
+    "all_conv_descriptors_nonempty": true,
+    "all_feature_descriptors_nonempty": true,
+    "all_returned_labels_match_identity": true
+  },
+  "gt_checks": [
+    {
+      "place_id": 0,
+      "spring_positive": 1,
+      "fall_positive": 1,
+      "adjacent_negative": 0,
+      "query_label_matches_reference": true
+    },
+    {
+      "place_id": 71,
+      "spring_positive": 1,
+      "fall_positive": 1,
+      "adjacent_negative": 0,
+      "query_label_matches_reference": true
+    },
+    {
+      "place_id": 142,
+      "spring_positive": 1,
+      "fall_positive": 1,
+      "adjacent_negative": 0,
+      "query_label_matches_reference": true
+    },
+    {
+      "place_id": 213,
+      "spring_positive": 1,
+      "fall_positive": 1,
+      "adjacent_negative": 0,
+      "query_label_matches_reference": true
+    },
+    {
+      "place_id": 284,
+      "spring_positive": 1,
+      "fall_positive": 1,
+      "adjacent_negative": 0,
+      "query_label_matches_reference": true
+    },
+    {
+      "place_id": 355,
+      "spring_positive": 1,
+      "fall_positive": 1,
+      "adjacent_negative": 0,
+      "query_label_matches_reference": true
+    },
+    {
+      "place_id": 426,
+      "spring_positive": 1,
+      "fall_positive": 1,
+      "adjacent_negative": 0,
+      "query_label_matches_reference": true
+    },
+    {
+      "place_id": 499,
+      "spring_positive": 1,
+      "fall_positive": 1,
+      "adjacent_negative": 0,
+      "query_label_matches_reference": true
+    }
+  ],
+  "per_sample": [
+    {
+      "place_id": 0,
+      "season": "spring",
+      "returned_label": 0,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.07525510340929031,
+        "l2_norm": 15.628998756408691
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.31245118379592896,
+        "zero_fraction": 0.5552842617034912,
+        "l2_norm": 6.147847652435303
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.31245118379592896,
+        "zero_fraction": 0.013888888992369175,
+        "l2_norm": 3.7363698482513428
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5112847089767456,
+        "l2_norm": 11.606582641601562
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.07896290719509125,
+        "max": 0.2295934557914734,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5869980454444885
+      }
+    },
+    {
+      "place_id": 0,
+      "season": "fall",
+      "returned_label": 0,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.09566326439380646,
+        "l2_norm": 16.496936798095703
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.36179137229919434,
+        "zero_fraction": 0.56396484375,
+        "l2_norm": 6.217431545257568
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.36179137229919434,
+        "zero_fraction": 0.02083333395421505,
+        "l2_norm": 3.733718156814575
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5134548544883728,
+        "l2_norm": 11.620206832885742
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.0797763466835022,
+        "max": 0.18461930751800537,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5725558996200562
+      }
+    },
+    {
+      "place_id": 0,
+      "season": "summer",
+      "returned_label": 0,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.10459183901548386,
+        "l2_norm": 16.616241455078125
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3307042121887207,
+        "zero_fraction": 0.5560981035232544,
+        "l2_norm": 6.588168144226074
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3307042121887207,
+        "zero_fraction": 0.01215277798473835,
+        "l2_norm": 4.002030849456787
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5282118320465088,
+        "l2_norm": 12.128826141357422
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.07316310703754425,
+        "max": 0.0959012359380722,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5714269280433655
+      }
+    },
+    {
+      "place_id": 71,
+      "season": "spring",
+      "returned_label": 568,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.0892857164144516,
+        "l2_norm": 15.931543350219727
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3195402920246124,
+        "zero_fraction": 0.5492079257965088,
+        "l2_norm": 6.255678653717041
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3195402920246124,
+        "zero_fraction": 0.013020833022892475,
+        "l2_norm": 3.8030288219451904
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5251736044883728,
+        "l2_norm": 10.611645698547363
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.060231685638427734,
+        "max": 0.22947221994400024,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5277145504951477
+      }
+    },
+    {
+      "place_id": 71,
+      "season": "fall",
+      "returned_label": 568,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.07270408421754837,
+        "l2_norm": 16.0872745513916
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.40757372975349426,
+        "zero_fraction": 0.5498589277267456,
+        "l2_norm": 6.408554553985596
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.40757372975349426,
+        "zero_fraction": 0.006076388992369175,
+        "l2_norm": 3.891685724258423
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5238715410232544,
+        "l2_norm": 10.696276664733887
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.05050487071275711,
+        "max": 0.22848519682884216,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5154970288276672
+      }
+    },
+    {
+      "place_id": 71,
+      "season": "summer",
+      "returned_label": 568,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.0892857164144516,
+        "l2_norm": 15.960383415222168
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.4287387728691101,
+        "zero_fraction": 0.5584309697151184,
+        "l2_norm": 6.503371715545654
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.4287387728691101,
+        "zero_fraction": 0.0164930559694767,
+        "l2_norm": 3.9148123264312744
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5173611044883728,
+        "l2_norm": 11.29381275177002
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.06006115302443504,
+        "max": 0.14159932732582092,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5433977842330933
+      }
+    },
+    {
+      "place_id": 142,
+      "season": "spring",
+      "returned_label": 1136,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.1071428582072258,
+        "l2_norm": 16.194581985473633
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.4249372184276581,
+        "zero_fraction": 0.57080078125,
+        "l2_norm": 6.830502986907959
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.4249372184276581,
+        "zero_fraction": 0.0321180559694767,
+        "l2_norm": 4.059854984283447
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5030381679534912,
+        "l2_norm": 12.844791412353516
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.07992014288902283,
+        "max": 0.3046887218952179,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6628696322441101
+      }
+    },
+    {
+      "place_id": 142,
+      "season": "fall",
+      "returned_label": 1136,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.1160714253783226,
+        "l2_norm": 17.099843978881836
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3836921453475952,
+        "zero_fraction": 0.5718858242034912,
+        "l2_norm": 7.107065677642822
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3836921453475952,
+        "zero_fraction": 0.015625,
+        "l2_norm": 4.134169101715088
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5177951455116272,
+        "l2_norm": 12.779711723327637
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.08053088188171387,
+        "max": 0.27594834566116333,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6671980023384094
+      }
+    },
+    {
+      "place_id": 142,
+      "season": "summer",
+      "returned_label": 1136,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.09566326439380646,
+        "l2_norm": 16.83339500427246
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.394148588180542,
+        "zero_fraction": 0.5754665732383728,
+        "l2_norm": 6.309454917907715
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.394148588180542,
+        "zero_fraction": 0.0529513880610466,
+        "l2_norm": 3.7240147590637207
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5130208134651184,
+        "l2_norm": 13.054588317871094
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.10177890211343765,
+        "max": 0.2114029824733734,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6617985367774963
+      }
+    },
+    {
+      "place_id": 213,
+      "season": "spring",
+      "returned_label": 1704,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.14158163964748383,
+        "l2_norm": 16.489723205566406
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3794616162776947,
+        "zero_fraction": 0.5608723759651184,
+        "l2_norm": 7.003524303436279
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3794616162776947,
+        "zero_fraction": 0.0434027761220932,
+        "l2_norm": 4.097570419311523
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5147569179534912,
+        "l2_norm": 13.80898666381836
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.09488026052713394,
+        "max": 0.3469923436641693,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.7945339679718018
+      }
+    },
+    {
+      "place_id": 213,
+      "season": "fall",
+      "returned_label": 1704,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.08163265138864517,
+        "l2_norm": 16.593503952026367
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.38412851095199585,
+        "zero_fraction": 0.5577256679534912,
+        "l2_norm": 6.616796970367432
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.38412851095199585,
+        "zero_fraction": 0.0086805559694767,
+        "l2_norm": 3.988638162612915
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.52734375,
+        "l2_norm": 12.016615867614746
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.07904088497161865,
+        "max": 0.2850111722946167,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6453256607055664
+      }
+    },
+    {
+      "place_id": 213,
+      "season": "summer",
+      "returned_label": 1704,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.10459183901548386,
+        "l2_norm": 16.749914169311523
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.4264072775840759,
+        "zero_fraction": 0.5501301884651184,
+        "l2_norm": 6.774281024932861
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.4264072775840759,
+        "zero_fraction": 0.0069444444961845875,
+        "l2_norm": 4.004540920257568
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5069444179534912,
+        "l2_norm": 12.081229209899902
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.07270078361034393,
+        "max": 0.19092300534248352,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6226465106010437
+      }
+    },
+    {
+      "place_id": 284,
+      "season": "spring",
+      "returned_label": 2272,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.10586734861135483,
+        "l2_norm": 16.403369903564453
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3764212131500244,
+        "zero_fraction": 0.5493706464767456,
+        "l2_norm": 6.744699954986572
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3764212131500244,
+        "zero_fraction": 0.006076388992369175,
+        "l2_norm": 4.1394805908203125
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5290798544883728,
+        "l2_norm": 11.830504417419434
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.06243440881371498,
+        "max": 0.27575230598449707,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6374598741531372
+      }
+    },
+    {
+      "place_id": 284,
+      "season": "fall",
+      "returned_label": 2272,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.09948979318141937,
+        "l2_norm": 16.393802642822266
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.29517579078674316,
+        "zero_fraction": 0.5555012822151184,
+        "l2_norm": 6.634669780731201
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.29517579078674316,
+        "zero_fraction": 0.0147569440305233,
+        "l2_norm": 4.019176483154297
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5277777910232544,
+        "l2_norm": 11.634587287902832
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.0668891966342926,
+        "max": 0.24760715663433075,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6237508654594421
+      }
+    },
+    {
+      "place_id": 284,
+      "season": "summer",
+      "returned_label": 2272,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.10076530277729034,
+        "l2_norm": 16.239545822143555
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.31443145871162415,
+        "zero_fraction": 0.5517035722732544,
+        "l2_norm": 6.293688774108887
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.31443145871162415,
+        "zero_fraction": 0.01128472201526165,
+        "l2_norm": 3.7813844680786133
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5173611044883728,
+        "l2_norm": 10.428502082824707
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.05155269801616669,
+        "max": 0.10911497473716736,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5273749232292175
+      }
+    },
+    {
+      "place_id": 355,
+      "season": "spring",
+      "returned_label": 2840,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.1071428582072258,
+        "l2_norm": 16.337636947631836
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3768676221370697,
+        "zero_fraction": 0.5692816972732544,
+        "l2_norm": 6.5668535232543945
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3768676221370697,
+        "zero_fraction": 0.0434027761220932,
+        "l2_norm": 3.9219868183135986
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5208333134651184,
+        "l2_norm": 11.941816329956055
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.06852303445339203,
+        "max": 0.25887325406074524,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6344289779663086
+      }
+    },
+    {
+      "place_id": 355,
+      "season": "fall",
+      "returned_label": 2840,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.07270408421754837,
+        "l2_norm": 16.666370391845703
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3576144874095917,
+        "zero_fraction": 0.57470703125,
+        "l2_norm": 6.257525444030762
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3576144874095917,
+        "zero_fraction": 0.0416666679084301,
+        "l2_norm": 3.6895065307617188
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5069444179534912,
+        "l2_norm": 11.663294792175293
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.062307000160217285,
+        "max": 0.24937842786312103,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6137008666992188
+      }
+    },
+    {
+      "place_id": 355,
+      "season": "summer",
+      "returned_label": 2840,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.08418367058038712,
+        "l2_norm": 16.522180557250977
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.33604440093040466,
+        "zero_fraction": 0.5704752802848816,
+        "l2_norm": 6.534793853759766
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.33604440093040466,
+        "zero_fraction": 0.02864583395421505,
+        "l2_norm": 3.8346035480499268
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5260416865348816,
+        "l2_norm": 12.455848693847656
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.06687483936548233,
+        "max": 0.0814133882522583,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5976957082748413
+      }
+    },
+    {
+      "place_id": 426,
+      "season": "spring",
+      "returned_label": 3408,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.14923469722270966,
+        "l2_norm": 16.43706512451172
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3794271945953369,
+        "zero_fraction": 0.5723741054534912,
+        "l2_norm": 6.516436576843262
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3794271945953369,
+        "zero_fraction": 0.0633680522441864,
+        "l2_norm": 3.814323663711548
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5221354365348816,
+        "l2_norm": 11.963568687438965
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.07709687948226929,
+        "max": 0.19102832674980164,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.589049756526947
+      }
+    },
+    {
+      "place_id": 426,
+      "season": "fall",
+      "returned_label": 3408,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.1301020383834839,
+        "l2_norm": 17.01798439025879
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.33995363116264343,
+        "zero_fraction": 0.5548502802848816,
+        "l2_norm": 6.923027038574219
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.33995363116264343,
+        "zero_fraction": 0.01215277798473835,
+        "l2_norm": 3.9675676822662354
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5225694179534912,
+        "l2_norm": 11.570289611816406
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.07044509053230286,
+        "max": 0.24214106798171997,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5876043438911438
+      }
+    },
+    {
+      "place_id": 426,
+      "season": "summer",
+      "returned_label": 3408,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.1160714253783226,
+        "l2_norm": 16.88292694091797
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.36786043643951416,
+        "zero_fraction": 0.5763346552848816,
+        "l2_norm": 6.714418888092041
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.36786043643951416,
+        "zero_fraction": 0.0321180559694767,
+        "l2_norm": 3.889252185821533
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5329861044883728,
+        "l2_norm": 12.026607513427734
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.07624579966068268,
+        "max": 0.08594997972249985,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.588024377822876
+      }
+    },
+    {
+      "place_id": 499,
+      "season": "spring",
+      "returned_label": 3992,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.11734694242477417,
+        "l2_norm": 16.404682159423828
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3964298665523529,
+        "zero_fraction": 0.5633137822151184,
+        "l2_norm": 6.650999546051025
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.3964298665523529,
+        "zero_fraction": 0.03125,
+        "l2_norm": 3.935203790664673
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5121527910232544,
+        "l2_norm": 11.735740661621094
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.059016406536102295,
+        "max": 0.2864597737789154,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.5876927375793457
+      }
+    },
+    {
+      "place_id": 499,
+      "season": "fall",
+      "returned_label": 3992,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.1160714253783226,
+        "l2_norm": 16.364774703979492
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.38985133171081543,
+        "zero_fraction": 0.5673285722732544,
+        "l2_norm": 6.702772617340088
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.38985133171081543,
+        "zero_fraction": 0.03125,
+        "l2_norm": 3.9658634662628174
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.5147569179534912,
+        "l2_norm": 11.90115737915039
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.06885242462158203,
+        "max": 0.2954896092414856,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.6132509708404541
+      }
+    },
+    {
+      "place_id": 499,
+      "season": "summer",
+      "returned_label": 3992,
+      "spikes": {
+        "shape": [
+          1,
+          784
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 1.0,
+        "zero_fraction": 0.12244898080825806,
+        "l2_norm": 16.547622680664062
+      },
+      "conv_pre_wta": {
+        "shape": [
+          1,
+          32,
+          24,
+          24
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.33912453055381775,
+        "zero_fraction": 0.5612521767616272,
+        "l2_norm": 6.871529579162598
+      },
+      "conv": {
+        "shape": [
+          1,
+          1152
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.33912453055381775,
+        "zero_fraction": 0.01822916604578495,
+        "l2_norm": 4.043318271636963
+      },
+      "feature": {
+        "shape": [
+          1,
+          2304
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": 0.0,
+        "max": 0.8999999761581421,
+        "zero_fraction": 0.4978298544883728,
+        "l2_norm": 12.383182525634766
+      },
+      "track_a_output": {
+        "shape": [
+          1,
+          500
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "min": -0.07516805827617645,
+        "max": 0.1515522003173828,
+        "zero_fraction": 0.0,
+        "l2_norm": 0.585281491279602
+      }
+    }
+  ],
+  "visual_check": {
+    "contact_sheet": "/home/ubuntu/projects/VPRTempo/IDEA1-covstdp/handoff/P0_2026-11-08/P0_样本三联图.png",
+    "status": "completed_by_viewing_contact_sheet",
+    "notes": "8 行三联图的文件名逐行一致；春秋夏均呈现相同线路区段、轨道分叉/标志物与山体或建筑布局，季节光照和植被差异明显。未发现错行、空白图或季节错配。此检查只验证身份对应与可读性，不证明检索正确率。"
+  },
+  "invalid_items": [],
+  "limitations": [
+    "Eight-place forward acceptance is not a retrieval performance evaluation.",
+    "Only the b5_500 seed0 single-module checkpoint was exercised.",
+    "Static and dynamic results bind to the recorded current HEAD; they do not prove the historical run SHA.",
+    "No training, evaluation entry point, checkpoint save, or winter image read was performed."
+  ]
+}

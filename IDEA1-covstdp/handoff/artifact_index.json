@@ -1,0 +1,58 @@
+{
+  "artifacts": [
+    {
+      "id": "b5_500__seed0.pth",
+      "limitations": "历史运行代码 SHA 未知（checkpoint 无运行级元数据）",
+      "machine": "工位机",
+      "path": "vprtempo/models/b5_500__seed0.pth",
+      "purpose": "P1 conv-only 来源 / C0 旧协议复核",
+      "related_configs": [
+        "IDEA1-covstdp/phase2/configs/b5_500.json（P0 核实的对应配置：local WTA block=4，28×28/patches=7/patch_norm=on）",
+        "IDEA1-covstdp/phase3/configs/table1/b5_500.json（主表 block=2 口径配置，不对应本 checkpoint 的 1152 维形状）",
+        "IDEA1-covstdp/handoff/P0_2026-11-08/（P0 材料）"
+      ],
+      "sha256": "2f6d8736a5762608f4d0fd6428dd9a35aa57223d3fbcbf716f6349a501c3b6be",
+      "size_bytes": 15242975,
+      "type": "checkpoint"
+    },
+    {
+      "generated_by": "IDEA1-covstdp/handoff/make_conv_only_state.py",
+      "id": "conv_only_state_b5_500__seed0.json",
+      "limitations": "历史运行代码 SHA 未知；conv 阈值为历史 ITP 产物；仅含 conv 层，不含 feature/output",
+      "machine": "工位机",
+      "path": "IDEA1-covstdp/handoff/conv_only_state_b5_500__seed0.json",
+      "purpose": "P1 conv-only 固定前端状态（conv W/阈值/ON-OFF mask 实际值） / C0 旧协议复核",
+      "related_configs": [
+        "IDEA1-covstdp/phase2/configs/b5_500.json",
+        "IDEA1-covstdp/phase3/configs/table1/b5_500.json",
+        "IDEA1-covstdp/handoff/P0_2026-11-08/（P0 材料）"
+      ],
+      "self_sha256_canonical": "46e69d30497bd077ed9285676ed4f563b1cd912982ef76406810a1616661aed9",
+      "sha256": "a928f5d68e31e9dcd48da31c1cc0f4c2a3889c7f1f74712c864dc3549e393fa5",
+      "sha256_scope": "sha256 为整个文件字节的 SHA256；self_sha256_canonical 为工件内部登记的 canonical-JSON 口径，两者算法与语义不同，各自标注",
+      "size_bytes": 37131,
+      "source_checkpoint_sha256": "2f6d8736a5762608f4d0fd6428dd9a35aa57223d3fbcbf716f6349a501c3b6be",
+      "type": "derived_artifact"
+    },
+    {
+      "generated_by": "IDEA1-covstdp/handoff/p0_rebuild_check.py",
+      "id": "p0_rebuild_check.json",
+      "limitations": "仅证明在登记配置下 JSON 状态可无损重建 conv 前向；不证明历史训练运行等价",
+      "machine": "工位机",
+      "path": "IDEA1-covstdp/handoff/p0_rebuild_check.json",
+      "purpose": "P0 样本输出对拍：原 checkpoint conv 前端 vs conv_only_state JSON 重建前端",
+      "scope": "24 个 P0 样本（8 地点 × 春/秋/夏），all_match=True，max_abs_diff_overall=0.0",
+      "self_sha256_canonical": "dab1ce76eed3975a284d3695f00e944f2ea8241447d2ee3588ec85df0a826392",
+      "sha256": "4c5b01b63e411c5e89fe97277b53f32eca01854832f4592d2a81f4c778a85370",
+      "size_bytes": 5258,
+      "source_checkpoint_sha256": "2f6d8736a5762608f4d0fd6428dd9a35aa57223d3fbcbf716f6349a501c3b6be",
+      "type": "verification_result"
+    }
+  ],
+  "generated_by": "IDEA1-covstdp/handoff/make_artifact_index.py",
+  "index": "idea1_covstdp_handoff_artifacts",
+  "schema_version": 1,
+  "scope": "D1–D6 移交片区：conv-only 状态工件与工件索引（仅登记本片区产出的工件及其来源检查点，不替代其他片区的索引）",
+  "self_sha256": "cfad2d1dae4fec2634b9e2add945b71c42374177da3f0ef3002c3e266c872733",
+  "self_sha256_scope": "SHA256(UTF-8 字节 of canonical JSON)：整对象中本字段取空串占位、sort_keys=True、separators=(',',':')、ensure_ascii=False"
+}
