@@ -57,3 +57,10 @@
 - `archive/feat-convstdp-s31-kernel-viz-20261109`
 - `archive/feat-mlp-baseline-20261109`
 - `archive/main-baseline-20260902`
+
+## 整理记录（2026-11-09）
+
+- **归档提交**：`f50b00ae25e1d97f9c17a9b7f6e65e2074c86872` —— A 组历史材料入库（P0 五件、档案 v1/v2/v3 以 v3 为入口、证据包整包）、conv-only 工件（block=4 口径）+ 工件索引（3 工件）+ P0 重建对拍（24 样本 max|Δ|=0）；11 个 `archive/*` tag 已全部推送并读回核验。
+- **第 1 批精简提交**：`29358a3` —— 按 `handoff/cleanup_batch1_2026-11-09.md` 移除 22 项 MLP 执行代码/配置（22/22，无暂停项；逐项 blob 与基点 d7a4ff 一致、无反向依赖）；历史封存于 `archive/feat-mlp-baseline-20261109`（MLP 原始结果 JSON 与 `results/mlp_comparison.md` 保留在活动树）。
+- **回归结果**：前置检查 22/22 通过；删后无残留引用、关键模块 py_compile 通过；`main.py --help` 入口正常（frontend 全选项含 none/gabor）；B5 配置加载 OK（frontend=gabor, wta_block=4）；frontend=none 配置构造 OK；VPRTempo/VPRTempoTrain/eval_retrieval/eval_hog 导入 OK；P0 固定样本短前向回归 24/24 all_match、max|Δ|=0.0（前端/阈值/评价语义未变，未训练）。
+- **未决**：工作站 s32a stash 保全（SSH 不可达，未触碰）；证据包 ZIP 删除待远端核验后执行；老分支删除待 GPT 第 2 批清单。
