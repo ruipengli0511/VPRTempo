@@ -1,20 +1,9 @@
 #!/usr/bin/env python
 # ================================================================================
-# run_exp.py — IDEA1 实验驱动器（PLAN.md S1.1）
+# run_exp.py — 配置驱动训练与原版地点输出评价
 #
-# 功能：读 JSON 配置 → 构造 argparse.Namespace → 函数调用 main.initialize_and_run_model
-#       （禁止 subprocess 拼命令行）→ 结果落盘 IDEA1-covstdp/results/<exp_id>/seed_<n>/
-#
-# 用法：
-#   pixi run python IDEA1-covstdp/experiments/run_exp.py <config.json> --train --eval --seed 0
-#
-# 注意事项（S1.1 卡片列出的三个坑）：
-#   1. check_pretrained_model 在模型已存在时 input() 交互询问 —— 本脚本强制唯一模型名
-#      （<exp_id>__seed<n>），永不撞名，规避交互；
-#   2. main.py / vprtempo 内大量使用相对路径（'./vprtempo/...'）—— 必须从仓库根目录运行，
-#      本脚本启动时断言 cwd；
-#   3. loggers 的全局 logging 在多次函数调用下会重复添加 handler —— 每次运行前清理 root
-#      logger 的 handlers。
+# 用法：pixi run python IDEA1-covstdp/experiments/run_exp.py <config.json> --train --eval --seed 0
+# 必须从仓库根目录运行。已有同名模型时拒绝训练覆盖；重跑需使用新的 run 名称。
 # ================================================================================
 import argparse
 import glob
@@ -89,6 +78,8 @@ def make_namespace(cfg: dict, train: bool) -> argparse.Namespace:
     # 否则用唯一名 <exp_id>__seed<n>，规避 check_pretrained_model 的交互式询问
     if not cfg.get("model_name"):
         ns.model_name = f"{cfg['exp_id']}__seed{cfg['seed']}.pth"
+    elif not ns.model_name.endswith(".pth"):
+        ns.model_name += ".pth"
     return ns
 
 
@@ -179,12 +170,11 @@ def main():
         reset_root_logger()
         ns = make_namespace(cfg, train)
         if train:
-            # 坑 1：模型已存在时 check_pretrained_model 会 input() 卡死批量跑。
-            # 驱动层显式覆盖：删除同名旧模型（打印记录），语义清晰可复现。
             model_path = REPO_ROOT / "vprtempo" / "models" / ns.model_name
             if model_path.exists():
-                print(f"[run_exp] 覆盖已存在模型 {ns.model_name}")
-                model_path.unlink()
+                raise FileExistsError(
+                    f"Refusing to overwrite existing model: {model_path}. "
+                    "Use a new exp_id, seed, or model_name.")
         t0 = time.time()
         initialize_and_run_model(ns, dims)
         wall = time.time() - t0

@@ -17,3 +17,8 @@ IDEA1-covstdp/docs/workstation-handover.md
 
 # 相似度矩阵大文件（逐格 S_trackB，本地/工作站留存，不进库）
 *.npy
+
+# 实验运行日志、批量日志目录和重复证据压缩包只保留在本地或归档 tag
+IDEA1-covstdp/results/**/*.log
+IDEA1-covstdp/results/*_logs/
+/VPRTempo_证据包_*.zip

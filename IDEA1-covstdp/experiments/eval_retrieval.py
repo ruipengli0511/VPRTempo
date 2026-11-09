@@ -1,19 +1,9 @@
 #!/usr/bin/env python
 # ================================================================================
-# eval_retrieval.py — IDEA1 S1.4：轨 B 评测（raw feature retrieval）
+# eval_retrieval.py — 统一描述子最近邻检索
 #
-# 功能：绕开 output layer 的 spike-forcing 读出，直接用 encoder 特征做最近邻检索：
-#   1. 加载训练好的模型（与轨 A 同一个 .pth）；
-#   2. 提取数据库（多季节合并，test=False 顺序）与查询图像的 encoder 特征；
-#   3. L2 归一化 → cosine 相似度矩阵 S；
-#   4. GT 用与轨 A 同一实现（vprtempo/src/gt.py），多季节纵向平铺；
-#   5. recallAtK + recall@100%precision，落盘 results/<exp_id>/seed_<n>/。
-#
-# 特征提取点（PLAN.md S1.4 钉死）：
-#   - B0：feature_layer 输出（clamp 后）。注：轨 A 推理是纯矩阵连乘（不减阈值不 clamp），
-#     轨 B 采用 clamp 后输出作为"encoder 的标准产出"，差异已在 PLAN 中声明。
-#   - 后续 B1/B2/B3/B5：conv 前端池化后 flatten 的 1152 维（阶段 2 接入）。
-#
+# 支持灰度 feature、Gabor conv 直通和 Gabor feature。描述子经 L2 归一化后计算
+# cosine 相似度，GT 与原版地点输出评价一致。显式 feature_point 可避免混淆取点。
 # 用法：pixi run python IDEA1-covstdp/experiments/eval_retrieval.py <config.json> --seed 0
 # ================================================================================
 import argparse
@@ -69,6 +59,8 @@ def build_inference_models(cfg):
             final_out = final_out_dim
 
     model_name = cfg.get("model_name") or f"{cfg['exp_id']}__seed{cfg['seed']}.pth"
+    if not model_name.endswith(".pth"):
+        model_name += ".pth"
     models[0].load_model(models, os.path.join('./vprtempo/models', model_name))
     return models
 
@@ -132,29 +124,38 @@ def main():
     # ---- 数据库数据集：多季节合并（test=False），顺序 = [季节0 全部地点, 季节1 ...] ----
     # skip_db：数据库侧的 skip（会议口径下训练 skip=0、查询 skip=4800，两者不同）
     skip_db = cfg.get("skip_db", cfg["skip"])
+    db_dirs = [d.strip() for d in cfg["database_dirs"].split(',')]
+    query_dir = cfg["query_dir"].strip()
     db_csvs = [os.path.join('./vprtempo/dataset', f'{cfg["dataset"]}-{d}.csv')
-               for d in cfg["database_dirs"].split(',')]
+               for d in db_dirs]
     db_dataset = CustomImageDataset(
         annotations_file=db_csvs, base_dir=cfg["data_dir"],
-        img_dirs=cfg["database_dirs"].split(','), transform=transform,
+        img_dirs=db_dirs, transform=transform,
         filter=cfg["filter"], skip=skip_db, test=False,
         max_samples=cfg["database_places"])
     n_seasons = len(db_csvs)
 
     # ---- 查询数据集（test=True，与轨 A run_inference 同构）----
-    q_csv = os.path.join('./vprtempo/dataset', f'{cfg["dataset"]}-{cfg["query_dir"]}.csv')
+    q_csv = os.path.join('./vprtempo/dataset', f'{cfg["dataset"]}-{query_dir}.csv')
     q_dataset = CustomImageDataset(
         annotations_file=q_csv, base_dir=cfg["data_dir"],
-        img_dirs=[cfg["query_dir"]], transform=transform,
+        img_dirs=[query_dir], transform=transform,
         filter=cfg["filter"], skip=cfg["skip"], test=True,
         max_samples=cfg["query_places"])
+    assert len(db_dataset) == n_seasons * cfg["database_places"]
+    assert len(q_dataset) == cfg["query_places"]
 
     t0 = time.time()
-    feat_point = cfg.get("feature_point", "auto")   # 'auto'|'conv'|'feature_layer'
+    feat_point = cfg.get("feature_point", "auto")
     if feat_point == "auto":
-        feat_point = "conv" if cfg.get("frontend", "none") != "none" else "feature_layer"
-    F_db = extract_features(models, db_dataset, model.device, feature_point=feat_point)
-    F_q = extract_features(models, q_dataset, model.device, feature_point=feat_point)
+        feat_point = "conv" if cfg.get("frontend", "none") == "gabor" else "feature_layer"
+    if feat_point not in ("conv", "feature_layer"):
+        raise ValueError(f"Unsupported feature_point: {feat_point}")
+    if feat_point == "conv" and cfg.get("frontend", "none") != "gabor":
+        raise ValueError("feature_point='conv' requires the Gabor frontend")
+    device = model.feature_layer.w.weight.device
+    F_db = extract_features(models, db_dataset, device, feature_point=feat_point)
+    F_q = extract_features(models, q_dataset, device, feature_point=feat_point)
     wall = time.time() - t0
 
     # ---- cosine 相似度矩阵 ----
@@ -166,6 +167,7 @@ def main():
     GT = build_ground_truth_multiseason(
         cfg["database_places"], cfg["query_places"], n_seasons,
         skip=cfg["skip"], filter=cfg["filter"], tolerance=cfg["GT_tolerance"])
+    assert S.shape == GT.shape
 
     # ---- 指标 ----
     Ks = [1, 5, 10, 15, 20, 25]
@@ -187,7 +189,7 @@ def main():
         "feature_dim": int(F_db.shape[1]),
         "n_db_rows": int(S.shape[0]), "n_query": int(S.shape[1]),
         "n_seasons": n_seasons,
-        "wall_time_s": round(wall, 2), "device": model.device,
+        "wall_time_s": round(wall, 2), "device": str(device),
         "config": cfg,
         "recallAtK": recalls, "recallAt100precision": round(r100, 4),
         "precisionAt100recall": round(p100, 4),

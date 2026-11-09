@@ -27,7 +27,7 @@ p0_rebuild_check.py — P0 样本输出对拍：原 checkpoint conv 前端 vs
 
 路径 A（原前端）：build_inference_models(phase2 b5_500.json, seed=0) 加载
   vprtempo/models/b5_500__seed0.pth 的 conv_layer（权重来自 checkpoint）。
-路径 B（JSON 重建）：ConvSNNLayer 以 conv_stdp 随机初始化构造后，
+路径 B（JSON 重建）：直接构造 ConvSNNLayer 推理容器，
   w / thr / havconnExc 全部由 conv_only_state_b5_500__seed0.json 覆写
   —— 即前端状态的唯一来源是工件 JSON，不经过 gabor_frontend 代码重生成。
 
@@ -42,7 +42,6 @@ p0_rebuild_check.py — P0 样本输出对拍：原 checkpoint conv 前端 vs
     pixi run python IDEA1-covstdp/handoff/p0_rebuild_check.py
 ================================================================================
 """
-import argparse
 import hashlib
 import json
 import sys
@@ -82,11 +81,16 @@ def main() -> int:
     print(f"[A] checkpoint 前端：frontend={models_a[0].frontend} "
           f"wta_block={layer_a.wta_block} thr[0,3]={layer_a.thr.flatten()[:4].tolist()}")
 
-    # ---- 路径 B：conv_stdp 随机初始化 + JSON 全量覆写 ----
+    # ---- 路径 B：直接构造空容器 + JSON 全量覆写 ----
     st = json.loads(CONV_JSON.read_text(encoding="utf-8"))
-    ns = argparse.Namespace(**{**cfg, "frontend": "conv_stdp"})
     dims = [int(x) for x in cfg["dims"].split(",")]
-    layer_b = cf.build_conv_layer(ns, dims, torch.device("cpu"), inference=True)
+    layer_b = cf.ConvSNNLayer(
+        input_dims=dims, in_channels=1,
+        out_channels=int(cfg.get("conv_channels", 32)),
+        kernel_size=int(cfg.get("conv_kernel", 5)),
+        wta_mode=cfg.get("wta_mode", "local"),
+        wta_block=int(cfg.get("wta_block", 4)),
+        device=torch.device("cpu"), inference=True, frozen=True)
     w = torch.tensor(st["conv_state"]["weights"]["values"], dtype=torch.float32).unsqueeze(1)
     thr = torch.tensor(st["conv_state"]["thresholds"]["values"], dtype=torch.float32).view(1, -1, 1, 1)
     mask = torch.tensor(st["conv_state"]["on_off_mask"]["values"], dtype=torch.bool)
@@ -140,7 +144,7 @@ def main() -> int:
             "config": "IDEA1-covstdp/phase2/configs/b5_500.json（block=4 口径）",
         },
         "path_a": "build_inference_models 加载 checkpoint 的 conv_layer",
-        "path_b": "ConvSNNLayer(conv_stdp 随机初始化) 的 w/thr/havconnExc 全部由 conv_only_state JSON 覆写",
+        "path_b": "直接构造 ConvSNNLayer 推理容器，w/thr/havconnExc 全部由 conv_only_state JSON 覆写",
         "n_samples": len(checked),
         "tolerance": 0.0,
         "all_match": all_match,

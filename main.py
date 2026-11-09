@@ -466,69 +466,32 @@ def parse_network():
     # 提供时固定 torch/numpy/random 三件套 + DataLoader shuffle 生成器。
     parser.add_argument('--seed', type=int, default=None,
                         help="Random seed for reproducibility (IDEA1); default None = unseeded (original behavior)")
-    # ---- IDEA1 S2.5：卷积前端相关参数（默认 frontend='none' = B0 原行为）----
-    parser.add_argument('--frontend', type=str, default='none',
-                        choices=['none', 'conv_stdp', 'random_conv', 'gabor',
-                                 'gabor_stdp', 'gabor_stdp_freesign',
-                                 'conv_stdp_freesign'],
-                        help="Conv frontend type (IDEA1); default none = original VPRTempo")
+    # 研究分支只暴露灰度像素和固定 Gabor 两条输入路线。
+    parser.add_argument('--frontend', type=str, default='none', choices=['none', 'gabor'],
+                        help="Input representation: original grayscale pixels or fixed Gabor")
     parser.add_argument('--wta_mode', type=str, default='local', choices=['global', 'local', 'none'],
-                        help="WTA competition mode for conv frontend (IDEA1)")
+                        help="WTA competition mode for the Gabor frontend")
     parser.add_argument('--wta_block', type=int, default=4,
-                        help="Local WTA block size (IDEA1)")
-    parser.add_argument('--agg_mode', type=str, default='mean', choices=['mean', 'sum'],
-                        help="Winner aggregation mode for conv STDP (IDEA1)")
-    parser.add_argument('--pre_mode', type=str, default='centered', choices=['centered', 'amp', 'heaviside'],
-                        help="Pre-term mode for conv STDP (IDEA1)")
+                        help="Local WTA block size")
     parser.add_argument('--conv_channels', type=int, default=32,
-                        help="Number of conv frontend channels (IDEA1)")
+                        help="Number of fixed Gabor channels")
     parser.add_argument('--conv_kernel', type=int, default=5,
-                        help="Conv frontend kernel size (IDEA1)")
+                        help="Fixed Gabor kernel size")
     parser.add_argument('--conv_epoch', type=int, default=2,
-                        help="Conv frontend training epochs (IDEA1)")
-    # ---- IDEA1 S3.2a 调参窗：conv 前端四个原硬编码超参（默认值与硬编码完全一致，默认行为不变）----
+                        help="Frontend ITP epochs")
     parser.add_argument('--conv_thr_range', type=str, default="0,0.5",
-                        help="Conv frontend initial threshold range \"lo,hi\" (IDEA1 tuning)")
+                        help="Frontend initial threshold range \"lo,hi\"")
     parser.add_argument('--conv_fire_rate', type=str, default="0.2,0.9",
-                        help="Conv frontend target firing rate range \"lo,hi\" (IDEA1 tuning)")
+                        help="Frontend target firing-rate range \"lo,hi\"")
     parser.add_argument('--conv_ip_rate', type=float, default=0.15,
-                        help="Conv frontend ITP learning rate (IDEA1 tuning)")
-    parser.add_argument('--conv_stdp_rate', type=float, default=0.005,
-                        help="Conv frontend STDP learning rate (IDEA1 tuning)")
-    # ---- IDEA1 fork G：ITP 阈值地板（默认 0.0 = 原行为不变）----
-    # free-sign 变体（B6b/conv_stdp_freesign）直通前向下可达发放率结构性偏低，
-    # ITP 追目标发放率把阈值推到 0 后被 clamp(min=0) 卡死（工作点崩塌，见
-    # results/s210_b6_preview.md §3）。允许负地板（如 -0.5）后 ITP 继续有效。
+                        help="Frontend ITP learning rate")
     parser.add_argument('--conv_thr_min', type=float, default=0.0,
-                        help="Lower bound for conv frontend ITP threshold clamp (IDEA1); "
-                             "default 0.0 = original behavior; free-sign variants may use negative values")
-    # ---- IDEA1 fork G：B1+ITP 主表行（S3.2 第 6 条 ITP 匹配对照）----
-    parser.add_argument('--itp_on_frozen', action='store_true',
-                        help="Keep ITP threshold adaptation on a frozen conv frontend "
-                             "(e.g. random_conv); B5 gabor enables this internally (IDEA1)")
-    # ---- IDEA1 S3.6：feature 层可塑性分解（F0–F3 消融，默认 on = B0/B5 回归不破）----
-    # 仅作用于 feature 层（spk_force=False）的无监督分支；output 层恒为全开。
+                        help="Lower bound for frontend ITP thresholds")
+    # feature 层消融只影响无监督 feature 分支；output 层保持原行为。
     parser.add_argument('--feat_stdp', type=str, default='on', choices=['on', 'off'],
-                        help="Feature-layer weight plasticity switch (STDP+clamp+homeostasis), "
-                             "on/off (IDEA1 S3.6); default on = original behavior")
+                        help="Feature-layer weight plasticity switch")
     parser.add_argument('--feat_itp', type=str, default='on', choices=['on', 'off'],
-                        help="Feature-layer threshold plasticity switch (ITP), "
-                             "on/off (IDEA1 S3.6); default on = original behavior")
-    # ---- IDEA1 S2.11 规则锦标赛 Round 1：四个独立可组合的规则手术开关（默认全关 = B2 不变）----
-    parser.add_argument('--bcm_gate', action='store_true',
-                        help="R1: BCM sliding threshold theta_M (EMA of post^2) replaces fixed 0.5 in conv STDP (IDEA1 S2.11)")
-    parser.add_argument('--bcm_alpha', type=float, default=0.001,
-                        help="R1: EMA rate for theta_M (10-50x slower than weight learning, prevents ITP oscillation)")
-    parser.add_argument('--rank_push', action='store_true',
-                        help="R2: rank-k channel within each WTA block gets -delta times update (IDEA1 S2.11)")
-    parser.add_argument('--rank_delta', type=float, default=0.4,
-                        help="R2: negative update strength delta for the rank-k channel")
-    parser.add_argument('--rank_k', type=int, default=2,
-                        help="R2: which cross-channel rank receives the negative update")
-    parser.add_argument('--oja_decay', action='store_true',
-                        help="R3: replace norm-preserving renorm with Oja decay term -post^2*w (IDEA1 S2.11)")
-    parser.add_argument('--attractor', action='store_true',
-                        help="R4: pre-term (pre-0.5) -> (patch - kernel) reconstruction attractor (IDEA1 S2.11)")
+                        help="Feature-layer threshold plasticity switch")
 
     # ------------------------------------------------------------------------
     # 【行级】网络功能开关（布尔标志）

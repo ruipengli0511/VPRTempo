@@ -42,9 +42,9 @@
       "path": "IDEA1-covstdp/handoff/p0_rebuild_check.json",
       "purpose": "P0 样本输出对拍：原 checkpoint conv 前端 vs conv_only_state JSON 重建前端",
       "scope": "24 个 P0 样本（8 地点 × 春/秋/夏），all_match=True，max_abs_diff_overall=0.0",
-      "self_sha256_canonical": "dab1ce76eed3975a284d3695f00e944f2ea8241447d2ee3588ec85df0a826392",
-      "sha256": "4c5b01b63e411c5e89fe97277b53f32eca01854832f4592d2a81f4c778a85370",
-      "size_bytes": 5258,
+      "self_sha256_canonical": "fed4954010544277c4b9f0f5eb2a52c894d75a60b02289d15f0e74991cb198ee",
+      "sha256": "88e7ea4279ba2a0bdd46be39259ad50c9c6f06246b72e9f88d10b28f3c24c899",
+      "size_bytes": 5255,
       "source_checkpoint_sha256": "2f6d8736a5762608f4d0fd6428dd9a35aa57223d3fbcbf716f6349a501c3b6be",
       "type": "verification_result"
     }
@@ -53,6 +53,6 @@
   "index": "idea1_covstdp_handoff_artifacts",
   "schema_version": 1,
   "scope": "D1–D6 移交片区：conv-only 状态工件与工件索引（仅登记本片区产出的工件及其来源检查点，不替代其他片区的索引）",
-  "self_sha256": "cfad2d1dae4fec2634b9e2add945b71c42374177da3f0ef3002c3e266c872733",
+  "self_sha256": "976630875e0ca258d2e4b9a9559a371824f0cfedc1f527681acebf6ac29bc43c",
   "self_sha256_scope": "SHA256(UTF-8 字节 of canonical JSON)：整对象中本字段取空串占位、sort_keys=True、separators=(',',':')、ensure_ascii=False"
 }

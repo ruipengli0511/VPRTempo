@@ -11,7 +11,7 @@
   "max_abs_diff_overall": 0.0,
   "n_samples": 24,
   "path_a": "build_inference_models 加载 checkpoint 的 conv_layer",
-  "path_b": "ConvSNNLayer(conv_stdp 随机初始化) 的 w/thr/havconnExc 全部由 conv_only_state JSON 覆写",
+  "path_b": "直接构造 ConvSNNLayer 推理容器，w/thr/havconnExc 全部由 conv_only_state JSON 覆写",
   "per_sample": [
     {
       "file": "spring/images-00202.png",
@@ -208,7 +208,7 @@
   ],
   "purpose": "原 checkpoint conv 前端 vs conv_only_state JSON 重建前端的 P0 样本输出对拍",
   "schema_version": 1,
-  "self_sha256": "dab1ce76eed3975a284d3695f00e944f2ea8241447d2ee3588ec85df0a826392",
+  "self_sha256": "fed4954010544277c4b9f0f5eb2a52c894d75a60b02289d15f0e74991cb198ee",
   "self_sha256_scope": "SHA256(UTF-8 字节 of canonical JSON)：整对象中本字段取空串占位、sort_keys=True、separators=(',',':')、ensure_ascii=False",
   "tolerance": 0.0
 }

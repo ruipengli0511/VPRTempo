@@ -1,66 +1,64 @@
-本文档是当前唯一入口说明，最后更新 2026-11-09
+# CURRENT.md — VPRTempo 研究入口
 
-# CURRENT.md — VPRTempo / IDEA1-covstdp 当前状态
+最后更新：2026-11-09
 
-## 1. 当前研究目标
+## 研究范围
 
-- 固定 **Gabor（B5 手工 Gabor 前端）为工作基准**，研究 VPR 地点关系如何进入 feature 层学习。
-- 分支职责（日常口径）：`main` = 经核验稳定入口；`work/task-feature` = 唯一活动开发分支。旧分支不再使用，已全部转为 `archive/*` 存档 tag（见文末 tag 列表，共 11 个）。
+当前只维护两条输入路线，并使用统一的检索评价接口：
 
-## 2. 机器角色
+- **灰度像素**：原 VPRTempo 预处理后的 28×28 输入，784 维，`frontend=none`；
+- **固定 Gabor**：当前 B5 滤波器组，`frontend=gabor`；P0/B5 checkpoint 对应 local WTA block=4、1152 维 conv 描述子。
 
-- **本机 = 工位机**：代码 `/home/ubuntu/projects/VPRTempo`，CPU 环境（pixi 默认环境），数据 `/mnt/d/Data/datasets/vpr/Nordland`。
-- **GPU 工作站**：`/root/VPRTempo`（容器内路径），双 RTX 4090，SSH 别名 `vpr-workspace`（端口 8024）/ `vpr-host`（端口 22），pixi cuda 环境。
-- 两台机器的路径与环境各自独立，引用时不混称。
+研究对象是 feature 描述子检索及后续 feature 学习。Gabor conv 直通作为绕过 feature 层的参照，原版地点输出路径作为整体系统基线。不同取点必须在配置中用 `feature_point` 明确区分，不能混用历史数字。
 
-## 3. 当前代码版本
+## 分支职责
 
-- 当前 HEAD：`d7a4ff34547821588c1023cedc180ee65375e6bc`（d7a4ff3）。
-- 口径纪律：所有新结果须区分**训练使用 SHA** 与**发布结果 SHA**；历史记录中缺失的 SHA 记"未知"，不补造。
+- `main`：原始 VPRTempo 稳定基线，固定于 `2e4adfc91eb188281a6613e5fffa245b0bed756a`，不接收研究改动。
+- `research/base`：公共代码、灰度像素基线、统一描述子检索和评价入口。
+- `base/gabor`：固定 Gabor/B5 工作基线。这里的“最佳”仅指已有 Nordland 配置与协议，不代表所有数据集上的绝对最优。
+- `exp/<backend>`：后续短期实验分支；Gabor 实验从 `base/gabor` 开始，像素实验从 `research/base` 开始。
 
-## 4. 当前可用入口
+公共修改先进入 `research/base`，再通过正常 merge 合入 `base/gabor`。不在两个 base 中分别修改公共评价语义，不使用强推或历史重写。
 
-- **P0 验收材料**：`IDEA1-covstdp/handoff/P0_2026-11-08/`（`p0_forward_acceptance.py`、`样本与前向验收.json`、`P0_样本三联图.png`、`工作站状态与复用差异.md`、`P1实施建议.md`）。
-- **B5 前端检索入口**：`IDEA1-covstdp/experiments/eval_retrieval.py` + `IDEA1-covstdp/phase2/configs/b5_500.json` + `feature_point=conv`，模型 `vprtempo/models/b5_500__seed0.pth`。
-- **conv-only 工件**：`IDEA1-covstdp/handoff/conv_only_state_b5_500__seed0.json`。
-- **工件索引**：`IDEA1-covstdp/handoff/artifact_index.json`。
+## 机器与本地文件
 
-## 5. 关键历史结果及适用范围
+- 工位机：`/home/ubuntu/projects/VPRTempo`，pixi 默认 CPU 环境；Nordland 数据位于 `/mnt/d/Data/datasets/vpr/Nordland`。
+- GPU 工作站：`/root/VPRTempo`，双 RTX 4090；其环境和路径与工位机分开记录。
+- `vprtempo/models/b5_500__seed0.pth` 是本地 checkpoint，不被 Git 跟踪；SHA256 为 `2f6d8736a5762608f4d0fd6428dd9a35aa57223d3fbcbf716f6349a501c3b6be`。
+- `local_override.json`、原图、NPY、日志和新增 checkpoint 保持本地，不入库。工作站 s32a stash 仍需连通后单独保全。
 
-1. **B5 手工 Gabor 前端**：3300 地轨A R@1 0.717±0.006 vs B0 0.597±0.006（+12.0pt；3 seeds；Nordland 28×28）——适用范围：会议规模、轨A 完整系统口径；500 地迭代档同向（0.980 vs 0.930）。
-2. **B2 从零 Conv-STDP 无增益**：3300 地轨A B2−B0 仅 +0.003±0.006，轨B 在 3300 地为负——从零学习未带来稳定增量。
-3. **广播/密集层权重可塑性无益或有害**：F 组轨B 相对锚点无增量；feat-BCM 在 feature 层系统性崩塌（3300 地轨A 全部 <0.14）。
-4. **ITP 实为单调阈值去抑制**：冻结诊断中阈值均值 0.27→0.006、发放率 1.6%→45.9%；`layer.x` 语义已核查——非发放率自适应机制，引用按此口径。
-5. **MLP-BP 对照（M2）**：等呈现量下严重欠训；充分训练后接近但不及 SNN；随机特征 + BP 读出与 SNN 接近。
-6. **HOG 直通**：显著弱于 Gabor，且随规模退化。
-7. **规模反转三例**：池化粒度、freesign、BCM——500 地结论不可直接外推 3300 地。
-8. **指标注意**：P@100%R 结构上等价 R@1；R@100%P 为条件召回，不与 R@K 混用。
-9. **F 组口径**：按执行方报告记录，GPT 未独立验证，不写严格等价。
+## 活动入口
 
-结果索引：`IDEA1-covstdp/results/table1_main.md`、`IDEA1-covstdp/results/f0f3_feature_ablate.md`、`IDEA1-covstdp/results/mlp_comparison.md`、`IDEA1-covstdp/results/fig2_kernels.png`；档案 `VPRTempo_历史探索实验档案_2026-10-12_v3.md`；证据包 `VPRTempo_证据包_2026-10-12/`。
+- 配置驱动训练/原版输出评价：`IDEA1-covstdp/experiments/run_exp.py`。
+- 描述子检索：`IDEA1-covstdp/experiments/eval_retrieval.py`。
+- 固定 Gabor 轻量自检：`IDEA1-covstdp/experiments/test_gabor_frozen.py`。
+- 像素 B0 与 Gabor B5 主配置：`IDEA1-covstdp/phase3/configs/table1/`。
+- F0–F3 feature STDP/ITP 对照：`IDEA1-covstdp/phase3/configs/f*_b5_*.json`。
+- P0 block4 配置：`IDEA1-covstdp/phase2/configs/b5_500.json`。
+- conv-only 状态、P0 对拍和工件索引：`IDEA1-covstdp/handoff/`。
 
-## 6. 当前任务状态
+`run_exp.py` 不再自动删除同名模型；训练目标已存在时会拒绝运行，需使用新的 `exp_id`、seed 或模型名。
 
-- **本轮已完成**：旧分支 `archive/*` tag 存档（11 个，见文末）、A 组材料入库、`handoff/artifact_index.json` 工件索引、本 CURRENT.md。
-- **剩余事项**：P1a（Gabor 描述子缓存 + 地点关系学习 + 限定短训练）；源码精简清单待 GPT 审阅；ORC/winter 臂未跑；工作站 s32a stash 保全待连通；证据包 ZIP 与目录差异待裁决。
+## 关键历史结果及边界
 
-## 附：archive/* 存档 tag 列表（11 个）
+- 固定 Gabor/B5 在 3300 地轨 A 为 R@1 `0.717±0.006`，B0 为 `0.597±0.006`；该整体差值包含历史容量等差异，不能全部归因于结构编码。
+- F 组结果支持：阈值适应是当前稳定收益的重要来源；已测试的 feature STDP 权重更新没有稳定增量。结论限于已有结构、初始化和训练预算。
+- Gabor conv 直通是独立参照，不能解释为大 feature 层的收益；B0 的 feature 读出与 B5 的 conv 直读取点不同。
+- HOG、MLP、BCM、B6 和其他前端探索已退出活动树，不作为当前研究路线。
 
-- `archive/feat-convstdp-base-20261109`
-- `archive/feat-convstdp-bcm-feature-20261109`
-- `archive/feat-convstdp-f0f3-feature-ablate-20261109`
-- `archive/feat-convstdp-s210-b6-20261109`
-- `archive/feat-convstdp-s2122-forward-wta-20261109`
-- `archive/feat-convstdp-s2324-learning-20261109`
-- `archive/feat-convstdp-s25-integration-20261109`
-- `archive/feat-convstdp-s29-gabor-20261109`
-- `archive/feat-convstdp-s31-kernel-viz-20261109`
-- `archive/feat-mlp-baseline-20261109`
-- `archive/main-baseline-20260902`
+当前结果摘要：
 
-## 整理记录（2026-11-09）
+- `IDEA1-covstdp/results/table1_main.md`
+- `IDEA1-covstdp/results/table1_main.json`
+- `IDEA1-covstdp/results/f0f3_feature_ablate.md`
+- `IDEA1-covstdp/results/s29_b5_gabor.md`
 
-- **归档提交**：`f50b00ae25e1d97f9c17a9b7f6e65e2074c86872` —— A 组历史材料入库（P0 五件、档案 v1/v2/v3 以 v3 为入口、证据包整包）、conv-only 工件（block=4 口径）+ 工件索引（3 工件）+ P0 重建对拍（24 样本 max|Δ|=0）；11 个 `archive/*` tag 已全部推送并读回核验。
-- **第 1 批精简提交**：`29358a3` —— 按 `handoff/cleanup_batch1_2026-11-09.md` 移除 22 项 MLP 执行代码/配置（22/22，无暂停项；逐项 blob 与基点 d7a4ff 一致、无反向依赖）；历史封存于 `archive/feat-mlp-baseline-20261109`（MLP 原始结果 JSON 与 `results/mlp_comparison.md` 保留在活动树）。
-- **回归结果**：前置检查 22/22 通过；删后无残留引用、关键模块 py_compile 通过；`main.py --help` 入口正常（frontend 全选项含 none/gabor）；B5 配置加载 OK（frontend=gabor, wta_block=4）；frontend=none 配置构造 OK；VPRTempo/VPRTempoTrain/eval_retrieval/eval_hog 导入 OK；P0 固定样本短前向回归 24/24 all_match、max|Δ|=0.0（前端/阈值/评价语义未变，未训练）。
-- **未决**：工作站 s32a stash 保全（SSH 不可达，未触碰）；证据包 ZIP 删除待远端核验后执行；老分支删除待 GPT 第 2 批清单。
+## 本次收束记录
+
+- 收束前完整树：`archive/work-task-feature-pre-convergence-20261109` → `c7d9152ec2910bfcc2094a13b3951b5e15558a4a`。
+- 更早的 11 个 `archive/*` tag 继续保留；旧代码、原始结果、日志、相似度矩阵和证据包可从归档读取，不复制回活动树。
+- 保留代码已删除废弃前端分发、Conv-STDP/BCM/R1 死代码和旧 CLI；feature 层原有 STDP/ITP 对照不变。
+- 中途回归：B5 核/冻结权重/ITP/1152 维前向通过；P0 24/24 样本一致，`max|Δ|=0`；模型覆盖保护通过且 checkpoint 哈希不变。
+- 最终提交 SHA、完整回归和远端分支核验见本次收束的末尾提交记录。
+
+新结果必须区分实际训练代码 SHA 与结果发布 SHA；历史运行 SHA 缺失时记“未知”，不补造。
