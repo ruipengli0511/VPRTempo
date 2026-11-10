@@ -25,4 +25,3 @@ IDEA1-covstdp/results/*_logs/
 
 # Task-feature pilot cache, checkpoints and per-query predictions stay local.
 /runs/task_feature/
-
