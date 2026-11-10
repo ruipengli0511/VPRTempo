@@ -135,8 +135,9 @@ def load_gabor(root: Path, pixels: dict[str, torch.Tensor], cache_dir: Path,
         layer.eval()
         features = {}
         for season in SEASONS:
-            chunks = [cf.conv_forward(layer, part).cpu() for part in
-                      tqdm(pixels[season].split(64), desc=f"gabor {season}")]
+            # The existing ConvSNNLayer.reshape_input is intentionally single-image.
+            chunks = [cf.conv_forward(layer, sample.unsqueeze(0)).cpu() for sample in
+                      tqdm(pixels[season], desc=f"gabor {season}")]
             features[season] = torch.cat(chunks).contiguous()
         torch.save({"features": features}, cache)
     for season in SEASONS:
