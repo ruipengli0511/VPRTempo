@@ -75,7 +75,7 @@ def check_update() -> None:
         expected = before - 1e-3 * reference.layer.w.weight.grad * reference.connection_mask
         reference.layer.w.weight.copy_(expected)
         reference.project()
-    max_delta = float((model.layer.w.weight - reference.layer.w.weight).abs().max())
+    max_delta = float((model.layer.w.weight.detach() - reference.layer.w.weight.detach()).abs().max())
     assert max_delta < 2e-6, f"{task_update.METHOD}: update != autograd ({max_delta})"
     print(f"{task_update.METHOD}: update/autograd max_abs_diff={max_delta:.3g}")
 
