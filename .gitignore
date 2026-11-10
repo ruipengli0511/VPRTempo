@@ -22,3 +22,7 @@ IDEA1-covstdp/docs/workstation-handover.md
 IDEA1-covstdp/results/**/*.log
 IDEA1-covstdp/results/*_logs/
 /VPRTempo_证据包_*.zip
+
+# Task-feature pilot cache, checkpoints and per-query predictions stay local.
+/runs/task_feature/
+
