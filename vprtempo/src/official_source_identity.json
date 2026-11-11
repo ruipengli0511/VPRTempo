@@ -1,0 +1,85 @@
+{
+  "upstream_repository": "QVPR/VPRTempo",
+  "upstream_commit": "64154e5e3f9cf3fa8da652b36c731d139784d5a5",
+  "algorithm_files": [
+    {
+      "path": "main.py",
+      "sha256": "de6638139e37dd43e450e9ef733d248a1b56d28d48fa500ebf854f06fe89209a"
+    },
+    {
+      "path": "vprtempo/VPRTempo.py",
+      "sha256": "b14a1d5b1adc254649fb6eaede2bb7b08e2e2a568ad5ee32f562dba711f59125"
+    },
+    {
+      "path": "vprtempo/VPRTempoQuant.py",
+      "sha256": "54cd3aaffe0793fbdad6b214d52886a9f450df67476753d4c9da4048b55f9163"
+    },
+    {
+      "path": "vprtempo/VPRTempoQuantTrain.py",
+      "sha256": "16baa733c060654591838b1526b3cda1ad9758fe93afbcd01ae058e136aae3cf"
+    },
+    {
+      "path": "vprtempo/VPRTempoTrain.py",
+      "sha256": "700bb0e13cdae673c7bf6fb1821bbf52b0feb1473c0375bceaa0761569f889eb"
+    },
+    {
+      "path": "vprtempo/__init__.py",
+      "sha256": "d2b1e2f2c871546971b3519bdf6d5de81c5a2a58ef3bb294a2ca526a5ec52095"
+    },
+    {
+      "path": "vprtempo/dataset/nordland-fall.csv",
+      "sha256": "790a59381bc5c96919b5043fc4dc8bdf7e720e8d3cb4b1d2d535b87b92a15ce6"
+    },
+    {
+      "path": "vprtempo/dataset/nordland-spring.csv",
+      "sha256": "790a59381bc5c96919b5043fc4dc8bdf7e720e8d3cb4b1d2d535b87b92a15ce6"
+    },
+    {
+      "path": "vprtempo/dataset/nordland-summer.csv",
+      "sha256": "790a59381bc5c96919b5043fc4dc8bdf7e720e8d3cb4b1d2d535b87b92a15ce6"
+    },
+    {
+      "path": "vprtempo/src/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "vprtempo/src/blitnet.py",
+      "sha256": "ee1d66dd309c45f919608c1c87ab63f0de9fdad8dbf47cdede4f95cc1d990d18"
+    },
+    {
+      "path": "vprtempo/src/create_data_csv.py",
+      "sha256": "c1d8b8cd047d1aedd0570676e5e3907359a9190f1b45efa215ec9e7e40e7fd58"
+    },
+    {
+      "path": "vprtempo/src/dataset.py",
+      "sha256": "5ed6f72c071f106b9ab6915b31385b13107d072b0d074d15d386380627d0ea21"
+    },
+    {
+      "path": "vprtempo/src/demo.py",
+      "sha256": "c321627cf87963909e7596258ec54a5537cbd5bb211642f12e128a4db54b51ac"
+    },
+    {
+      "path": "vprtempo/src/download.py",
+      "sha256": "6e9d8ef50fd275aafa7b935fa0212b90adedb303138512c2cdecacd37e875505"
+    },
+    {
+      "path": "vprtempo/src/loggers.py",
+      "sha256": "e8c5792f4900e395478cac782c7e9eafca3b239dcd9693187f1be6928ccda722"
+    },
+    {
+      "path": "vprtempo/src/metrics.py",
+      "sha256": "56ef278506e64ae5b1a29ac25360d449cc6f9b4dc725a6c6f16c2418d4e76d47"
+    },
+    {
+      "path": "vprtempo/src/nordland.py",
+      "sha256": "2f19a768c8820fb7ca4d758f72374ae61719c6dfb7d9b1fe80c4830c23c90d4d"
+    },
+    {
+      "path": "vprtempo/src/process_orc.py",
+      "sha256": "8369c2742bf98531f9b7e701b9f1e0c3c9865f0e87db69b11e197e4491001eb3"
+    }
+  ],
+  "upstream_lock_sha256": "1154e80a4ba04b73fea22e352d1813f3077b8d5d7b3b7b77193c5d11a1c05bf9",
+  "runtime_lock_sha256": "9f73464d87884f2203f3d8e9e2f95dab26c62a170d20ddcac6efc044cd35850c",
+  "environment_adapter": "root Pixi manifest/lock copied from approved common runtime; official learning/preprocessing/inference source unchanged"
+}
