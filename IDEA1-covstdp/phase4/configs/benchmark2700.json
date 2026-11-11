@@ -1,0 +1,14 @@
+{
+  "data_dir": "/data/run01/sczc061/Lrp-Program/Datasets/Nordland",
+  "cache_dir": "/data/run01/sczc061/Lrp-Program/Cache/idea1-inputs/b04-benchmark-v1",
+  "run_root": "/data/run01/sczc061/Lrp-Program/Runs/idea1",
+  "n_places": 3300,
+  "query_start": 600,
+  "query_count": 2700,
+  "max_module": 1100,
+  "epochs": 4,
+  "device": "cuda",
+  "reuse_data_identity": "/data/run01/sczc061/Lrp-Program/Runs/idea1/idea1-b03-prepare-inputs/artifacts/data_identity.json",
+  "query_role": "locked_benchmark",
+  "protocol_id": "nordland-map3300-query600-3299-official-v1"
+}

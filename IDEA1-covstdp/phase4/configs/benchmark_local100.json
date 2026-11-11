@@ -1,0 +1,14 @@
+{
+  "data_dir": "/mnt/e/Datasets/Nordland",
+  "cache_dir": "/home/lrp/VPRTempo/runs/task_feature/b04-check-cache",
+  "run_root": "/home/lrp/VPRTempo/runs/task_feature/b04-check-runs",
+  "n_places": 100,
+  "query_start": 20,
+  "query_count": 20,
+  "max_module": 50,
+  "epochs": 1,
+  "device": "cuda",
+  "reuse_data_identity": "/home/lrp/VPRTempo/runs/task_feature/b03-check-runs/b03-full-fixed-gabor-check/artifacts/data_identity.json",
+  "query_role": "locked_benchmark",
+  "protocol_id": "local-engineering-only"
+}
