@@ -119,15 +119,14 @@ def main() -> None:
     pixels, identity = load_pixels(ROOT, Path(cfg["data_dir"]), cfg["n_places"],
                                    cfg["filter"], cache_dir)
     if cfg["frontend"] == "gabor":
-        inputs, identity = load_gabor(ROOT, pixels, cache_dir, identity, seed=cfg["seed"],
-                                       conv_epochs=cfg["gabor_conv_epochs"])
+        inputs, identity = load_gabor(ROOT, pixels, cache_dir, identity)
     else:
         inputs = pixels
     write_json(run_dir / "data_identity.json", identity)
     n = cfg["n_places"]
     in_dim = int(inputs["spring"].shape[1])
     cfg["effective_input_dim"] = in_dim
-    cfg["gabor_block"] = 2 if cfg["frontend"] == "gabor" else None
+    cfg["gabor_block"] = 4 if cfg["frontend"] == "gabor" else None
     write_json(run_dir / "effective_config.json", {"config": cfg, "git": version})
     model = TaskFeature(in_dim, cfg["feature_width"], cfg["seed"], device)
     initial = model.initial_state()
@@ -141,9 +140,6 @@ def main() -> None:
                                      {"spring": d_spring, "fall": d_fall},
                                      negative_min_gap=cfg["negative_min_gap"])
     write_json(run_dir / "triplet_schedule.json", triples)
-    if cfg["frontend"] == "gabor":
-        frozen = torch.load(identity["gabor_cache"], map_location="cpu", weights_only=True)
-        torch.save(frozen["frontend_state"], run_dir / "frozen_frontend_state.pth")
     write_json(run_dir / "run_identity.json", {"method": task_update.METHOD,
                "git": version, "initial_weight_sha256": w0_sha,
                "schedule_sha256": schedule_sha, "data_manifest_sha256": identity["manifest_sha256"],
