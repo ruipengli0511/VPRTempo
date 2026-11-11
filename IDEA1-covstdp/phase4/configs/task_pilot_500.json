@@ -10,5 +10,7 @@
   "seed": 0,
   "max_updates": null,
   "max_runtime_s": 28800,
-  "device": "cuda"
+  "device": "cuda",
+  "negative_min_gap": 50,
+  "gabor_conv_epochs": 4
 }

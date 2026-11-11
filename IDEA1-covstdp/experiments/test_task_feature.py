@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from vprtempo.src import task_update  # noqa: E402
-from vprtempo.src.task_feature import TaskFeature, _rank  # noqa: E402
+from vprtempo.src.task_feature import TaskFeature, _rank, schedule  # noqa: E402
 
 
 def check_rank() -> None:
@@ -89,4 +89,15 @@ def check_update() -> None:
 if __name__ == "__main__":
     check_rank()
     check_update()
+    initial = {"spring": torch.nn.functional.normalize(torch.rand(100, 12), dim=1),
+               "fall": torch.nn.functional.normalize(torch.rand(100, 12), dim=1)}
+    triples, sha = schedule(100, 2, 0, initial, negative_min_gap=20)
+    assert all(abs(a - n) >= 20 for epoch in triples for _, a, n in epoch)
+    assert schedule(100, 2, 0, initial, negative_min_gap=20)[1] == sha
+    try:
+        schedule(64, 1, 0, initial, negative_min_gap=50)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("impossible exclusion band must fail")
     print("task feature synthetic acceptance passed")

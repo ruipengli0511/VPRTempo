@@ -106,45 +106,63 @@ def load_pixels(root: Path, data_dir: Path, n_places: int, filter_step: int,
 
 
 def load_gabor(root: Path, pixels: dict[str, torch.Tensor], cache_dir: Path,
-               identity: dict) -> tuple[dict[str, torch.Tensor], dict]:
+               identity: dict, seed: int = 0, conv_epochs: int = 4) -> tuple[dict[str, torch.Tensor], dict]:
+    """Build block2 from spring/fall only, then freeze before backend learning.
+
+    No block4 threshold state is transplanted. This is a new recorded frontend,
+    not a reproduction of an unavailable historical block2 checkpoint.
+    """
+    from types import SimpleNamespace
+    from torch.utils.data import DataLoader, TensorDataset
     from vprtempo.src import conv_frontend as cf
 
-    state_path = root / CONV_STATE
-    state_sha = digest_file(state_path)
-    state = json.loads(state_path.read_text(encoding="utf-8"))["conv_state"]
+    settings = {"block": 2, "conv_epochs": conv_epochs, "seed": seed,
+                "source": "fresh_block2_gabor_train_only_itp"}
     key = digest_json({"pixel": identity["manifest_sha256"],
-                       "csv": identity["csv_sha256"], "state": state_sha,
+                       "csv": identity["csv_sha256"], "settings": settings,
                        "source": digest_file(Path(__file__))})
-    cache = cache_dir / f"gabor_{identity['n_places']}_{key[:16]}.pt"
+    cache = cache_dir / f"gabor_block2_{identity['n_places']}_{key[:16]}.pt"
     if cache.exists():
-        features = torch.load(cache, map_location="cpu", weights_only=True)["features"]
+        saved = torch.load(cache, map_location="cpu", weights_only=True)
+        features, frozen_state = saved["features"], saved["frontend_state"]
     else:
-        layer = cf.ConvSNNLayer(input_dims=[28, 28], in_channels=1,
-                                out_channels=32, kernel_size=5, wta_mode="local",
-                                wta_block=4, device=torch.device("cpu"),
-                                inference=True, frozen=True)
-        weights = torch.tensor(state["weights"]["values"], dtype=torch.float32).unsqueeze(1)
-        threshold = torch.tensor(state["thresholds"]["values"], dtype=torch.float32).view(1, 32, 1, 1)
-        polarity = torch.tensor(state["on_off_mask"]["values"], dtype=torch.bool)
-        if weights.shape != (32, 1, 5, 5) or threshold.shape != (1, 32, 1, 1):
-            raise ValueError("unexpected B5 conv-only state shape")
-        with torch.no_grad():
-            layer.w.weight.copy_(weights)
-            layer.thr.copy_(threshold)
-            layer.havconnExc.copy_(polarity)
+        torch.manual_seed(seed)
+        np.random.seed(seed)
+        device = torch.device("cpu")
+        spec = SimpleNamespace(frontend="gabor", conv_channels=32, conv_kernel=5,
+                               wta_mode="local", wta_block=2)
+        layer = cf.build_conv_layer(spec, [28, 28], device, inference=False)
+        original_weight = layer.w.weight.detach().clone()
+        training = torch.cat((pixels["spring"], pixels["fall"]))
+        loader = DataLoader(TensorDataset(training, torch.zeros(len(training))),
+                            batch_size=1, shuffle=True, num_workers=0,
+                            generator=torch.Generator().manual_seed(seed))
+        cf.train_conv_layer(loader, layer,
+                            SimpleNamespace(device=device, conv_epoch=conv_epochs))
+        if not torch.equal(layer.w.weight, original_weight):
+            raise RuntimeError("fixed Gabor weights changed during threshold adaptation")
+        layer.requires_grad_(False)
         layer.eval()
+        frozen_state = {name: value.detach().cpu().clone()
+                        for name, value in layer.state_dict().items()}
         features = {}
         for season in SEASONS:
-            # The existing ConvSNNLayer.reshape_input is intentionally single-image.
             chunks = [cf.conv_forward(layer, sample.unsqueeze(0)).cpu() for sample in
-                      tqdm(pixels[season], desc=f"gabor {season}")]
+                      tqdm(pixels[season], desc=f"block2 gabor {season}")]
             features[season] = torch.cat(chunks).contiguous()
-        torch.save({"features": features}, cache)
+        torch.save({"features": features, "frontend_state": frozen_state,
+                    "settings": settings}, cache)
     for season in SEASONS:
-        if features[season].shape != (identity["n_places"], 1152):
-            raise ValueError(f"invalid Gabor cache for {season}")
-    return features, {**identity, "gabor_state_sha256": state_sha,
-                      "gabor_cache": str(cache), "wta_block": 4}
+        if features[season].shape != (identity["n_places"], 4608):
+            raise ValueError(f"invalid block2 Gabor cache for {season}")
+    hasher = hashlib.sha256()
+    for name, tensor in sorted(frozen_state.items()):
+        hasher.update(name.encode())
+        hasher.update(tensor.contiguous().numpy().tobytes())
+    return features, {**identity, "gabor_state_sha256": hasher.hexdigest(),
+                      "gabor_cache": str(cache), "wta_block": 2,
+                      "gabor_state_source": settings["source"],
+                      "gabor_conv_epochs": conv_epochs, "gabor_frontend_seed": seed}
 
 
 class TaskFeature(nn.Module):
@@ -206,10 +224,10 @@ def descriptors(model: TaskFeature, x: torch.Tensor, batch_size: int = 64) -> tu
 
 
 def schedule(n_places: int, epochs: int, seed: int,
-             initial: dict[str, torch.Tensor]) -> tuple[list[list[tuple[int, int, int]]], str]:
+             initial: dict[str, torch.Tensor], negative_min_gap: int = 50) -> tuple[list[list[tuple[int, int, int]]], str]:
     """Each tuple is (anchor season: 0 spring/1 fall, place, negative place)."""
-    if n_places < 7:
-        raise ValueError("at least seven places are needed with +/-2 exclusion")
+    if negative_min_gap < 1 or n_places < 2 * negative_min_gap:
+        raise ValueError("need at least 2 * negative_min_gap places")
     rng = random.Random(seed)
     all_epochs = []
     for _ in range(epochs):
@@ -217,7 +235,7 @@ def schedule(n_places: int, epochs: int, seed: int,
         rng.shuffle(anchors)
         triples = []
         for index, (season, place) in enumerate(anchors):
-            legal = [p for p in range(n_places) if abs(p - place) > 2]
+            legal = [p for p in range(n_places) if abs(p - place) >= negative_min_gap]
             if index % 2 == 0:
                 negative = rng.choice(legal)
             else:
