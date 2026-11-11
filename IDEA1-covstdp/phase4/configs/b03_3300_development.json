@@ -1,0 +1,30 @@
+{
+  "data_dir": "/data/run01/sczc061/Lrp-Program/Datasets/Nordland",
+  "cache_dir": "/data/run01/sczc061/Lrp-Program/Cache/idea1-inputs/b03-v1",
+  "run_root": "/data/run01/sczc061/Lrp-Program/Runs/idea1",
+  "n_places": 3300,
+  "filter": 8,
+  "feature_width": 2304,
+  "epochs": 20,
+  "batch_size": 16,
+  "lr": 0.001,
+  "margin": 0.1,
+  "seed": 0,
+  "max_updates": null,
+  "max_runtime_s": 3600,
+  "device": "cuda",
+  "negative_min_gap": 50,
+  "query_role": "development",
+  "query_start": 600,
+  "query_count": 500,
+  "evaluation_epochs": [
+    0,
+    1,
+    4,
+    10,
+    20
+  ],
+  "cache_read_only": true,
+  "protocol_id": "nordland-map3300-dev600-1099-v1",
+  "historical_query_exposure": "previous summer studies exist; retained area is not claimed to be unseen"
+}

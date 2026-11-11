@@ -1,0 +1,27 @@
+{
+  "data_dir": "/mnt/e/Datasets/Nordland",
+  "cache_dir": "/home/lrp/VPRTempo/runs/task_feature/b03-check-cache",
+  "run_root": "/home/lrp/VPRTempo/runs/task_feature/b03-check-runs",
+  "n_places": 100,
+  "filter": 8,
+  "feature_width": 2304,
+  "epochs": 1,
+  "batch_size": 16,
+  "lr": 0.001,
+  "margin": 0.1,
+  "seed": 0,
+  "max_updates": null,
+  "max_runtime_s": 600,
+  "device": "cuda",
+  "negative_min_gap": 50,
+  "query_role": "development",
+  "query_start": 20,
+  "query_count": 20,
+  "evaluation_epochs": [
+    0,
+    1
+  ],
+  "cache_read_only": true,
+  "protocol_id": "local-engineering-check-only",
+  "historical_query_exposure": "previous summer studies exist; retained area is not claimed to be unseen"
+}

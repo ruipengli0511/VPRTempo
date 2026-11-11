@@ -27,7 +27,8 @@ from vprtempo.src import task_update  # noqa: E402
 from vprtempo.src.run_provenance import (code_identity, environment_identity,
                                         resolve_locations, runtime_identity, file_sha)
 from vprtempo.src.task_feature import (TaskFeature, descriptors, evaluate,  # noqa: E402
-                                       load_gabor, load_pixels, schedule)
+                                       load_gabor, load_pixels, schedule, digest_json, digest_file)
+from vprtempo.src.task_protocol import query_ids_from_config, cached_tensor
 
 
 def write_json(path: Path, value: object) -> None:
@@ -44,8 +45,8 @@ def checkpoint(path: Path, model: TaskFeature, metadata: dict) -> None:
 
 
 def evaluate_epoch(run_dir: Path, epoch: int, model: TaskFeature,
-                   inputs: dict, n_places: int) -> dict:
-    result = evaluate(model, inputs, n_places)
+                   inputs: dict, n_places: int, query_ids=None) -> dict:
+    result = evaluate(model, inputs, n_places, query_ids)
     predictions = result.pop("predictions")
     write_json(run_dir / f"predictions_epoch_{epoch}.json", predictions)
     result["epoch"] = epoch
@@ -72,6 +73,8 @@ def args_from_cli() -> argparse.Namespace:
     parser.add_argument("--max-runtime-s", type=int)
     parser.add_argument("--device", choices=("cpu", "cuda"))
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--prepare-inputs-only", action="store_true")
+    parser.add_argument("--cache-read-only", action="store_true", default=None)
     parser.add_argument("--allow-dirty", action="store_true", help="only for implementation smoke")
     return parser.parse_args()
 
@@ -94,8 +97,15 @@ def resolve_config(cli: argparse.Namespace) -> dict:
             cfg[key] = str(Path(cfg[key]).expanduser().resolve())
     cfg["n_places"] = int(cfg["n_places"])
     cfg["feature_width"] = int(cfg["feature_width"])
-    if not (7 <= cfg["n_places"] <= 500 and cfg["feature_width"] == 2304):
-        raise ValueError("pilot requires 7..500 places and 2304 feature units")
+    if not (7 <= cfg["n_places"] <= 3300 and cfg["feature_width"] == 2304):
+        raise ValueError("experiment requires 7..3300 places and 2304 feature units")
+    cfg['query_ids'] = query_ids_from_config(cfg)
+    cfg['query_role'] = 'development'
+    cfg['prepare_inputs_only'] = cli.prepare_inputs_only
+    cfg['cache_read_only'] = False if cli.prepare_inputs_only else (
+        cli.cache_read_only if cli.cache_read_only is not None else cfg.get('cache_read_only', False))
+    selected = cfg.get('evaluation_epochs', list(range(cfg['epochs'] + 1)))
+    cfg['evaluation_epochs'] = sorted({0, cfg['epochs']} | {int(e) for e in selected if 0 <= int(e) <= cfg['epochs']})
     if cfg["batch_size"] < 1 or cfg["lr"] <= 0 or cfg["margin"] <= 0:
         raise ValueError("invalid batch size, learning rate or margin")
     return cfg
@@ -129,9 +139,9 @@ def main() -> None:
     write_json(run_dir / "effective_config.json", {"config": cfg, "git": version, **run_meta})
 
     pixels, identity = load_pixels(ROOT, Path(cfg["data_dir"]), cfg["n_places"],
-                                   cfg["filter"], cache_dir)
+                                   cfg["filter"], cache_dir, cfg['query_ids'], cfg['cache_read_only'])
     if cfg["frontend"] == "gabor":
-        inputs, identity = load_gabor(ROOT, pixels, cache_dir, identity)
+        inputs, identity = load_gabor(ROOT, pixels, cache_dir, identity, cfg['cache_read_only'])
     else:
         inputs = pixels
     write_json(run_dir / "data_identity.json", identity)
@@ -140,6 +150,11 @@ def main() -> None:
     cfg["effective_input_dim"] = in_dim
     cfg["gabor_block"] = 4 if cfg["frontend"] == "gabor" else None
     write_json(run_dir / "effective_config.json", {"config": cfg, "git": version, **run_meta})
+    if cfg['prepare_inputs_only']:
+        write_json(run_dir / 'prepare_summary.json', {'status': 'complete', 'identity': identity,
+                   'config': cfg, 'provenance': run_meta, 'elapsed_s': time.monotonic() - started})
+        print(f'PREPARED_INPUTS={run_dir}', flush=True)
+        return
     model = TaskFeature(in_dim, cfg["feature_width"], cfg["seed"], device)
     initial = model.initial_state()
     w0_sha = hashlib.sha256(initial["weight"].numpy().tobytes()).hexdigest()
@@ -148,9 +163,16 @@ def main() -> None:
     with torch.no_grad():
         d_spring = descriptors(model, inputs["spring"])[0]
         d_fall = descriptors(model, inputs["fall"])[0]
-    triples, schedule_sha = schedule(n, cfg["epochs"], cfg["seed"],
-                                     {"spring": d_spring, "fall": d_fall},
-                                     negative_min_gap=cfg["negative_min_gap"])
+    schedule_key = digest_json({'n': n, 'epochs': cfg['epochs'], 'seed': cfg['seed'],
+        'gap': cfg['negative_min_gap'], 'w0': w0_sha, 'input': identity['manifest_sha256'],
+        'frontend': identity.get('gabor_state_sha256'),
+        'source': digest_file(ROOT / 'vprtempo/src/task_feature.py')})
+    def build_schedule():
+        items, sha = schedule(n, cfg['epochs'], cfg['seed'],
+                              {'spring': d_spring, 'fall': d_fall}, cfg['negative_min_gap'])
+        return {'triples': items, 'sha': sha}
+    saved_schedule = cached_tensor(cache_dir / f'triplets_{schedule_key}.pt', build_schedule)
+    triples, schedule_sha = saved_schedule['triples'], saved_schedule['sha']
     write_json(run_dir / "triplet_schedule.json", triples)
     write_json(run_dir / "run_identity.json", {"method": task_update.METHOD,
                "git": version, **run_meta, "run_id": cfg["run_id"],
@@ -164,11 +186,14 @@ def main() -> None:
                "run_id": cfg["run_id"], "provenance": run_meta,
                "seed": cfg["seed"], "n_places": n, "epoch_results": [],
                "update_diagnostics": [], "status": "running"}
+    direct = evaluate(None, inputs, n, cfg['query_ids'])
+    direct_predictions = direct.pop('predictions')
+    write_json(run_dir / 'predictions_input_direct.json', direct_predictions)
+    results['input_direct'] = direct
     if cfg["frontend"] == "gabor":
-        direct = evaluate(None, inputs, n)
-        write_json(run_dir / "predictions_gabor_direct.json", direct.pop("predictions"))
+        write_json(run_dir / 'predictions_gabor_direct.json', direct_predictions)
         results["gabor_direct"] = direct
-    results["random_feature"] = evaluate_epoch(run_dir, 0, model, inputs, n)
+    results["random_feature"] = evaluate_epoch(run_dir, 0, model, inputs, n, cfg['query_ids'])
     results["epoch_results"].append(results["random_feature"])
     checkpoint(run_dir / "checkpoint_epoch_0.pth", model, {"epoch": 0, "config": cfg,
                "git": version, **run_meta, "initial_weight_sha256": w0_sha, "schedule_sha256": schedule_sha})
@@ -178,6 +203,9 @@ def main() -> None:
     total_updates = 0
     stopped = False
     for epoch, epoch_triples in enumerate(triples, 1):
+        if device.type == 'cuda':
+            torch.cuda.synchronize()
+        training_started = time.monotonic()
         totals = {"loss_sum": 0.0, "active_count": 0, "valid_count": 0,
                   "triplet_count": 0, "steps": 0, "update_norm_sum": 0.0,
                   "projected_connections": 0}
@@ -195,6 +223,8 @@ def main() -> None:
                                     for s, _, q in batch]).to(device)
             report = task_update.step(model, anchor, positive, negative, optimizer,
                                       cfg["margin"])
+            if not np.isfinite(report['loss']) or not np.isfinite(report['update_norm']):
+                raise FloatingPointError('non-finite training result; refusing successful completion')
             count = report["valid_count"]
             totals["loss_sum"] += report["loss"] * count
             totals["active_count"] += report["active_count"]
@@ -205,23 +235,36 @@ def main() -> None:
             totals["projected_connections"] += report["projected_connections"]
             total_updates += 1
         if totals["steps"]:
+            if device.type == 'cuda':
+                torch.cuda.synchronize()
+            totals['training_wall_s'] = time.monotonic() - training_started
+            if not totals['valid_count']:
+                raise RuntimeError('epoch has no valid training triplets')
             totals["mean_loss"] = totals["loss_sum"] / max(1, totals["valid_count"])
             totals["active_fraction"] = totals["active_count"] / max(1, totals["valid_count"])
             totals["valid_fraction"] = totals["valid_count"] / max(1, totals["triplet_count"])
             totals["mean_update_norm"] = totals["update_norm_sum"] / totals["steps"]
             totals["epoch"] = epoch
             results["update_diagnostics"].append(totals)
-            results["epoch_results"].append(evaluate_epoch(run_dir, epoch, model, inputs, n))
-            checkpoint(run_dir / f"checkpoint_epoch_{epoch}.pth", model,
-                       {"epoch": epoch, "config": cfg, "git": version, **run_meta,
-                        "initial_weight_sha256": w0_sha, "schedule_sha256": schedule_sha})
+            if epoch in cfg['evaluation_epochs'] or stopped:
+                evaluation_started = time.monotonic()
+                result = evaluate_epoch(run_dir, epoch, model, inputs, n, cfg['query_ids'])
+                result['evaluation_wall_s'] = time.monotonic() - evaluation_started
+                result['partial_epoch'] = totals['triplet_count'] < len(epoch_triples)
+                with torch.no_grad():
+                    initial_w = initial['weight'].to(device)
+                    result['relative_weight_change'] = float((model.layer.w.weight - initial_w).norm() / initial_w.norm().clamp_min(1e-8))
+                results['epoch_results'].append(result)
+                checkpoint(run_dir / f"checkpoint_epoch_{epoch}.pth", model,
+                           {"epoch": epoch, "config": cfg, "git": version, **run_meta,
+                            "initial_weight_sha256": w0_sha, "schedule_sha256": schedule_sha})
             results["elapsed_s"] = time.monotonic() - started
             results["max_gpu_memory_bytes"] = (torch.cuda.max_memory_allocated()
                                                if device.type == "cuda" else 0)
             write_json(run_dir / "summary.json", results)
         if stopped:
             break
-    best = max(results["epoch_results"], key=lambda value: (value["place_R@1"],
+    best = max([r for r in results["epoch_results"] if not r.get('partial_epoch', False)], key=lambda value: (value["place_R@1"],
                                                            -value["epoch"]))
     results["selected_epoch"] = best["epoch"]
     results["selected_place_R@1"] = best["place_R@1"]
