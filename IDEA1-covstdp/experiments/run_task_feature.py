@@ -56,6 +56,7 @@ def args_from_cli() -> argparse.Namespace:
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--frontend", choices=("gabor", "gray"), required=True)
     parser.add_argument("--n-places", type=int)
+    parser.add_argument("--negative-min-gap", type=int)
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--batch-size", type=int)
     parser.add_argument("--lr", type=float)
@@ -71,7 +72,7 @@ def args_from_cli() -> argparse.Namespace:
 
 def resolve_config(cli: argparse.Namespace) -> dict:
     cfg = json.loads(cli.config.read_text(encoding="utf-8"))
-    for key in ("n_places", "epochs", "batch_size", "lr", "margin", "seed",
+    for key in ("n_places", "negative_min_gap", "epochs", "batch_size", "lr", "margin", "seed",
                 "max_updates", "max_runtime_s", "device"):
         value = getattr(cli, key)
         if value is not None:
@@ -118,12 +119,16 @@ def main() -> None:
     pixels, identity = load_pixels(ROOT, Path(cfg["data_dir"]), cfg["n_places"],
                                    cfg["filter"], cache_dir)
     if cfg["frontend"] == "gabor":
-        inputs, identity = load_gabor(ROOT, pixels, cache_dir, identity)
+        inputs, identity = load_gabor(ROOT, pixels, cache_dir, identity, seed=cfg["seed"],
+                                       conv_epochs=cfg["gabor_conv_epochs"])
     else:
         inputs = pixels
     write_json(run_dir / "data_identity.json", identity)
     n = cfg["n_places"]
-    in_dim = 1152 if cfg["frontend"] == "gabor" else 784
+    in_dim = int(inputs["spring"].shape[1])
+    cfg["effective_input_dim"] = in_dim
+    cfg["gabor_block"] = 2 if cfg["frontend"] == "gabor" else None
+    write_json(run_dir / "effective_config.json", {"config": cfg, "git": version})
     model = TaskFeature(in_dim, cfg["feature_width"], cfg["seed"], device)
     initial = model.initial_state()
     w0_sha = hashlib.sha256(initial["weight"].numpy().tobytes()).hexdigest()
@@ -133,8 +138,12 @@ def main() -> None:
         d_spring = descriptors(model, inputs["spring"])[0]
         d_fall = descriptors(model, inputs["fall"])[0]
     triples, schedule_sha = schedule(n, cfg["epochs"], cfg["seed"],
-                                     {"spring": d_spring, "fall": d_fall})
+                                     {"spring": d_spring, "fall": d_fall},
+                                     negative_min_gap=cfg["negative_min_gap"])
     write_json(run_dir / "triplet_schedule.json", triples)
+    if cfg["frontend"] == "gabor":
+        frozen = torch.load(identity["gabor_cache"], map_location="cpu", weights_only=True)
+        torch.save(frozen["frontend_state"], run_dir / "frozen_frontend_state.pth")
     write_json(run_dir / "run_identity.json", {"method": task_update.METHOD,
                "git": version, "initial_weight_sha256": w0_sha,
                "schedule_sha256": schedule_sha, "data_manifest_sha256": identity["manifest_sha256"],
