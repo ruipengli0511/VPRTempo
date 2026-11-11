@@ -22,9 +22,12 @@ from tqdm import tqdm
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
+sys.dont_write_bytecode = True
 from vprtempo.src import task_update  # noqa: E402
+from vprtempo.src.run_provenance import (code_identity, environment_identity,
+                                        resolve_locations, runtime_identity, file_sha)
 from vprtempo.src.task_feature import (TaskFeature, descriptors, evaluate,  # noqa: E402
-                                       git_identity, load_gabor, load_pixels, schedule)
+                                       load_gabor, load_pixels, schedule)
 
 
 def write_json(path: Path, value: object) -> None:
@@ -55,6 +58,9 @@ def args_from_cli() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--frontend", choices=("gabor", "gray"), required=True)
+    for key in ("data-dir", "cache-dir", "run-root", "deployment-manifest",
+                "deployment-manifest-sha", "environment-manifest"):
+        parser.add_argument("--" + key)
     parser.add_argument("--n-places", type=int)
     parser.add_argument("--negative-min-gap", type=int)
     parser.add_argument("--epochs", type=int)
@@ -73,7 +79,8 @@ def args_from_cli() -> argparse.Namespace:
 def resolve_config(cli: argparse.Namespace) -> dict:
     cfg = json.loads(cli.config.read_text(encoding="utf-8"))
     for key in ("n_places", "negative_min_gap", "epochs", "batch_size", "lr", "margin", "seed",
-                "max_updates", "max_runtime_s", "device"):
+                "max_updates", "max_runtime_s", "device", "data_dir", "cache_dir",
+                "run_root", "deployment_manifest", "deployment_manifest_sha", "environment_manifest"):
         value = getattr(cli, key)
         if value is not None:
             cfg[key] = value
@@ -82,6 +89,9 @@ def resolve_config(cli: argparse.Namespace) -> dict:
     cfg["method"] = task_update.METHOD
     cfg["allow_dirty"] = cli.allow_dirty
     cfg["data_dir"] = str(Path(cfg["data_dir"]).expanduser().resolve())
+    for key in ("deployment_manifest", "environment_manifest"):
+        if cfg.get(key):
+            cfg[key] = str(Path(cfg[key]).expanduser().resolve())
     cfg["n_places"] = int(cfg["n_places"])
     cfg["feature_width"] = int(cfg["feature_width"])
     if not (7 <= cfg["n_places"] <= 500 and cfg["feature_width"] == 2304):
@@ -96,7 +106,12 @@ def main() -> None:
         raise RuntimeError("run from repository root")
     cli = args_from_cli()
     cfg = resolve_config(cli)
-    version = git_identity(ROOT)
+    version = code_identity(ROOT, cfg.get("deployment_manifest"), cfg.get("deployment_manifest_sha"))
+    deployed = version["source"] == "verified_deployment_snapshot"
+    environment = environment_identity(cfg.get("environment_manifest"), ROOT / "pixi.lock", required=deployed)
+    run_dir, cache_dir = resolve_locations(cfg, ROOT, deployed=deployed)
+    runtime = runtime_identity(torch, np)
+    run_meta = {"code": version, "environment": environment, "runtime": runtime}
     if version["dirty"] and not cli.allow_dirty:
         raise RuntimeError("commit source changes before a recorded run; use --allow-dirty for smoke")
     device = torch.device(cfg["device"])
@@ -108,14 +123,11 @@ def main() -> None:
     if device.type == "cuda":
         torch.cuda.manual_seed_all(cfg["seed"])
 
-    run_root = ROOT / "runs" / "task_feature"
-    run_dir = run_root / cli.run_id
     run_dir.mkdir(parents=True, exist_ok=False)
     started = time.monotonic()
     deadline = started + cfg["max_runtime_s"]
-    write_json(run_dir / "effective_config.json", {"config": cfg, "git": version})
+    write_json(run_dir / "effective_config.json", {"config": cfg, "git": version, **run_meta})
 
-    cache_dir = run_root / "cache"
     pixels, identity = load_pixels(ROOT, Path(cfg["data_dir"]), cfg["n_places"],
                                    cfg["filter"], cache_dir)
     if cfg["frontend"] == "gabor":
@@ -127,7 +139,7 @@ def main() -> None:
     in_dim = int(inputs["spring"].shape[1])
     cfg["effective_input_dim"] = in_dim
     cfg["gabor_block"] = 4 if cfg["frontend"] == "gabor" else None
-    write_json(run_dir / "effective_config.json", {"config": cfg, "git": version})
+    write_json(run_dir / "effective_config.json", {"config": cfg, "git": version, **run_meta})
     model = TaskFeature(in_dim, cfg["feature_width"], cfg["seed"], device)
     initial = model.initial_state()
     w0_sha = hashlib.sha256(initial["weight"].numpy().tobytes()).hexdigest()
@@ -141,11 +153,15 @@ def main() -> None:
                                      negative_min_gap=cfg["negative_min_gap"])
     write_json(run_dir / "triplet_schedule.json", triples)
     write_json(run_dir / "run_identity.json", {"method": task_update.METHOD,
-               "git": version, "initial_weight_sha256": w0_sha,
-               "schedule_sha256": schedule_sha, "data_manifest_sha256": identity["manifest_sha256"],
+               "git": version, **run_meta, "run_id": cfg["run_id"],
+               "slurm_job_id": runtime["slurm_job_id"],
+               "effective_config_sha256": file_sha(run_dir / "effective_config.json"),
+               "data_identity_sha256": file_sha(run_dir / "data_identity.json"),
+               "initial_weight_sha256": w0_sha, "schedule_sha256": schedule_sha, "data_manifest_sha256": identity["manifest_sha256"],
                "gabor_state_sha256": identity.get("gabor_state_sha256")})
 
     results = {"method": task_update.METHOD, "frontend": cfg["frontend"],
+               "run_id": cfg["run_id"], "provenance": run_meta,
                "seed": cfg["seed"], "n_places": n, "epoch_results": [],
                "update_diagnostics": [], "status": "running"}
     if cfg["frontend"] == "gabor":
@@ -155,7 +171,7 @@ def main() -> None:
     results["random_feature"] = evaluate_epoch(run_dir, 0, model, inputs, n)
     results["epoch_results"].append(results["random_feature"])
     checkpoint(run_dir / "checkpoint_epoch_0.pth", model, {"epoch": 0, "config": cfg,
-               "git": version, "initial_weight_sha256": w0_sha, "schedule_sha256": schedule_sha})
+               "git": version, **run_meta, "initial_weight_sha256": w0_sha, "schedule_sha256": schedule_sha})
     write_json(run_dir / "summary.json", results)
 
     optimizer = SGD([model.layer.w.weight], lr=cfg["lr"], momentum=0.0, weight_decay=0.0)
@@ -197,7 +213,7 @@ def main() -> None:
             results["update_diagnostics"].append(totals)
             results["epoch_results"].append(evaluate_epoch(run_dir, epoch, model, inputs, n))
             checkpoint(run_dir / f"checkpoint_epoch_{epoch}.pth", model,
-                       {"epoch": epoch, "config": cfg, "git": version,
+                       {"epoch": epoch, "config": cfg, "git": version, **run_meta,
                         "initial_weight_sha256": w0_sha, "schedule_sha256": schedule_sha})
             results["elapsed_s"] = time.monotonic() - started
             results["max_gpu_memory_bytes"] = (torch.cuda.max_memory_allocated()
