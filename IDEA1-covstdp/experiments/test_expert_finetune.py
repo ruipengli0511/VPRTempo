@@ -140,5 +140,68 @@ class WarmStartChecks(unittest.TestCase):
                     apply_gradients(new,gnew,0.1,1e-4);old.apply_gradients(legacy,gold,0.1,1e-4)
                     self.assertEqual(tensor_digest(new.state_dict()),old.tensor_digest(legacy.state_dict()))
 
+    def test_common_probe_identity_reused_across_seeds(self):
+        sys.path.insert(0,str(Path(__file__).resolve().parent))
+        from run_expert_finetune import resolve_probe
+        rows=torch.tensor([[0,0,60],[1,1,70]],dtype=torch.long)
+        digest=tensor_digest({'triplets':rows})
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'probe.json'
+            path.write_text(json.dumps({'seed':0,'samples':rows.tolist(),'tensor_sha256':digest}))
+            ref={'fixed_probe':{'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'tensor_sha256':digest}}
+            cfg={'probe_triplets':2,'n_places':120,'negative_min_gap':50}
+            one,first=resolve_probe(cfg,ref,torch.zeros(1,2,3,dtype=torch.long),1)
+            two,second=resolve_probe(cfg,ref,torch.ones(1,2,3,dtype=torch.long),2)
+            self.assertTrue(torch.equal(one,two));self.assertTrue(torch.equal(one,rows))
+            self.assertEqual(first['tensor_sha256'],second['tensor_sha256'])
+            self.assertEqual((first['evaluated_seed'],second['evaluated_seed']),(1,2))
+
+    def test_mixed_commit_reuse_requires_hash_bound_evidence(self):
+        sys.path.insert(0,str(Path(__file__).resolve().parent))
+        from run_expert_finetune import choose_locked
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);runs=[]
+            for method in ['full','anchor']:
+                for seed in range(3):
+                    d=root/f'{method}{seed}';(d/'artifacts').mkdir(parents=True)
+                    cps=[]
+                    for epoch in [0,2]:
+                        path=d/f'cp{epoch}';path.write_bytes(f'{method}{seed}{epoch}'.encode())
+                        cps.append({'epoch':epoch,'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+                    producer='old' if seed==0 else 'new'
+                    summary={'status':'complete','phase':'training','code':{'commit':producer},'method':method,'seed':seed,
+                         'source':{'seed':seed},'calibration':{'lr':0.1},'schedule_identity':{'seed':seed},
+                         'initial_state_sha256':str(seed),'checkpoints':cps,'probe_identity':{'tensor_sha256':'shared'},
+                         'epoch_results':[{'epoch':e,'eligible_for_selection':True,'development':{'R@1':v,'queries':500}} for e,v in [(0,.7),(2,.8)]]}
+                    (d/'artifacts/summary.json').write_text(json.dumps(summary))
+                    (d/'result_manifest.json').write_text(json.dumps({'files':[]}))
+                    (d/'artifacts/effective_config.json').write_text(json.dumps({'lr':0.1}))
+                    (d/'trial_outcome.json').write_text(json.dumps({'status':'complete'}))
+                    item={'run_dir':str(d),'method':method,'seed':seed,'expected_commit':producer,'reuse':seed==0,'learning_rate':0.1}
+                    if seed==0:
+                        for key,path in [('summary_sha256',d/'artifacts/summary.json'),('result_manifest_sha256',d/'result_manifest.json'),('effective_config_sha256',d/'artifacts/effective_config.json')]:
+                            item[key]=hashlib.sha256(path.read_bytes()).hexdigest()
+                    runs.append(item)
+            result=choose_locked({},runs,'new',root)
+            self.assertEqual({v['training_commit'] for v in result['models'] if v['seed']==0},{'old'})
+            self.assertEqual({v['training_commit'] for v in result['models'] if v['seed']!=0},{'new'})
+            bad=[dict(v) for v in runs];bad[0].pop('effective_config_sha256')
+            with self.assertRaises(ValueError):choose_locked({},bad,'new',root)
+            path=Path(runs[0]['run_dir'])/'artifacts/summary.json';path.write_text(path.read_text()+' ')
+            with self.assertRaises(ValueError):choose_locked({},runs,'new',root)
+
+    def test_paired_R1_R5_statistics_keep_tradeoffs(self):
+        sys.path.insert(0,str(Path(__file__).resolve().parent))
+        from run_expert_finetune import paired_rows,aggregate_rows
+        def row(seed,r1,r5):return {'seed':seed,'subsets':{s:{'R@1':r1,'R@5':r5} for s in ['overall','development','buffer','retained']}}
+        left=[row(0,.70,.90),row(1,.80,.92),row(2,.90,.94)]
+        right=[row(0,.69,.91),row(1,.80,.92),row(2,.88,.93)]
+        result=paired_rows(left,right)['summary']['overall']
+        self.assertAlmostEqual(result['mean_R@1'],.01)
+        self.assertAlmostEqual(result['mean_R@5'],0.)
+        self.assertEqual(result['positive_seeds_R@1'],2)
+        self.assertEqual(result['negative_seeds_R@5'],1)
+        self.assertGreater(aggregate_rows(left)['overall']['std_R@5'],0)
+
 
 if __name__=='__main__':unittest.main()
