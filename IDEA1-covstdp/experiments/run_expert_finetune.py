@@ -15,7 +15,7 @@ sys.dont_write_bytecode=True
 from vprtempo.src.run_provenance import code_identity,environment_identity,resolve_locations,runtime_identity
 from vprtempo.src.benchmark2700_common import sha_file,write_json
 from vprtempo.src.expert_finetune import (ExpertFeature,tensor_digest,make_schedule,triplet_batch,
-                                         calibrate,gradients,apply_gradients,relative_drift)
+                                         calibrate,gradients,apply_gradients,relative_drift,probe_diagnostics)
 from eval_attribution2700 import official_weights
 from eval_locked2700 import evaluate
 
@@ -111,8 +111,14 @@ def train(cfg,source,pointer,out,provenance,method,seed):
     initial_features=extract(model,{k:pixels[k] for k in ('spring','fall')},device,normalized=True)
     plan,plan_identity=make_schedule(initial_features,cfg['epochs'],seed,cfg['negative_min_gap'])
     del initial_features
+    pairing=source.get('pairing_reference')
+    if pairing:
+        if seed!=pairing['seed'] or plan_identity!=pairing['schedule_identity'] or initial_hash!=pairing['initial_state_sha256']:
+            raise ValueError('initial state or negative schedule differs from B06 reference')
     training=torch.stack((pixels['spring'],pixels['fall']))
     calibration=calibrate(model,training,plan,cfg['batch_size'],device,cfg)
+    if 'requested_learning_rate' in cfg and abs(calibration['lr']-cfg['requested_learning_rate'])>1e-12:
+        raise RuntimeError('requested learning-rate arm reduced by initial safety check; do not silently relabel')
     if tensor_digest(model.state_dict())!=initial_hash:raise RuntimeError('preparation changed initial state')
     torch.save({'plan':plan,'identity':plan_identity},out/'training_plan.pt')
     write_json(out/'calibration.json',calibration);write_json(out/'schedule_identity.json',plan_identity)
@@ -125,18 +131,33 @@ def train(cfg,source,pointer,out,provenance,method,seed):
               'initial_state_sha256':initial_hash,'code_commit':provenance['code']['commit'],
               'schedule_sha256':plan_identity['tensor_sha256'],'calibration_sha256':json_sha(calibration),
               'config_sha256':json_sha(effective)}
-    epoch_results=[];checkpoints=[];history=[]
+    epoch_results=[];checkpoints=[];history=[];probe_history=[]
+    probe_rows=plan[0][:cfg.get('probe_triplets',0)].clone()
+    if len(probe_rows):
+        identity={'seed':seed,'count':len(probe_rows),'source':'first fixed epoch training triplets',
+                  'plan_sha256':plan_identity['tensor_sha256'],'tensor_sha256':tensor_digest({'triplets':probe_rows}),
+                  'fields':['anchor_season_0spring_1fall','place','negative_place'],'samples':probe_rows.tolist()}
+        write_json(out/'probe_identity.json',identity)
+        metadata['probe_sha256']=identity['tensor_sha256']
+    def record_probe(epoch,complete=True):
+        if not len(probe_rows):return
+        diagnostic=probe_diagnostics(model,training,probe_rows,calibration['margin'],method,calibration['lr'],
+                                     cfg['max_relative_step'],cfg['batch_size'],device)
+        diagnostic.update(epoch=epoch,epoch_complete=complete,probe_sha256=identity['tensor_sha256'])
+        write_json(out/f'probe_epoch_{epoch}.json',diagnostic);probe_history.append(diagnostic)
     def record(epoch,result=None,eligible=True):
         r=result or score(model,pixels,list(range(600,1100)),device)
         write_json(out/f'development_epoch_{epoch}_predictions.json',r.pop('predictions'))
         checkpoints.append(save_checkpoint(out,model,epoch,{**metadata,'epoch_complete':eligible}))
         epoch_results.append({'epoch':epoch,'development':r['subsets']['development'],
                               'relative_drift':relative_drift(model,initial),'eligible_for_selection':eligible})
-    record(0,pre);started=time.monotonic();stop_reason='budget_complete'
+    record_probe(0);record(0,pre);started=time.monotonic();stop_reason='budget_complete'
     log=(out/'updates.jsonl').open('x')
     try:
         for epoch,rows in enumerate(plan,1):
-            total={'loss':0.,'valid':0,'active':0,'batches':0,'step_capped':0,'projected_connections':0,'max_relative_step':0.}
+            total={'loss':0.,'valid':0,'active':0,'batches':0,'step_capped':0,'projected_connections':0,'max_relative_step':0.,
+                   'sum_unmasked_gradient_norm':0.,'sum_masked_gradient_norm':0.,'sum_pre_projection_step_norm':0.,
+                   'sum_actual_step_norm':0.,'sum_projection_change_norm':0.,'sum_projection_retained_step_ratio':0.}
             numerical_stop=False
             for batch,indices in enumerate(rows.split(cfg['batch_size'])):
                 a,p,n=triplet_batch(training,indices,device)
@@ -149,18 +170,26 @@ def train(cfg,source,pointer,out,provenance,method,seed):
                 total['batches']+=1;total['step_capped']+=int(step['step_scale']<1)
                 total['projected_connections']+=step['projected_connections']
                 total['max_relative_step']=max(total['max_relative_step'],step['actual_relative_step'])
+                for key in ['unmasked_gradient_norm','masked_gradient_norm']:total['sum_'+key]+=diag[key]
+                for key in ['pre_projection_step_norm','actual_step_norm','projection_change_norm','projection_retained_step_ratio']:
+                    total['sum_'+key]+=step[key]
                 if batch%20==0:log.write(json.dumps({'epoch':epoch,'batch':batch,**diag,**step})+'\n');log.flush()
             total['mean_loss']=total.pop('loss')/max(total['valid'],1)
             total['active_fraction']=total['active']/max(total['valid'],1)
             total['relative_drift']=relative_drift(model,initial);total['epoch']=epoch;history.append(total)
+            for key in ['unmasked_gradient_norm','masked_gradient_norm','pre_projection_step_norm','actual_step_norm','projection_change_norm','projection_retained_step_ratio']:
+                total['mean_'+key]=total['sum_'+key]/max(total['batches'],1)
             print(json.dumps({'epoch':epoch,**total}),flush=True)
             if total['relative_drift']>=cfg['max_relative_drift']:stop_reason='drift_guard'
+            record_probe(epoch,complete=not numerical_stop)
             if epoch in cfg['evaluation_epochs'] or numerical_stop or stop_reason=='drift_guard':record(epoch,eligible=not numerical_stop)
             if numerical_stop or stop_reason=='drift_guard':break
     finally:log.close()
     write_json(out/'summary.json',{'status':'complete','phase':'training','method':method,'seed':seed,
        'stop_reason':stop_reason,'epoch_results':epoch_results,'epoch_diagnostics':history,'checkpoints':checkpoints,
        'calibration':calibration,'schedule_identity':plan_identity,'initial_parity':parity,
+       'probe_history':probe_history,'probe_identity':identity if len(probe_rows) else None,
+       'requested_learning_rate':cfg.get('requested_learning_rate'),
        'training_s':time.monotonic()-started,'source':item,'initial_state_sha256':initial_hash,
        'max_allocated_gpu_bytes':torch.cuda.max_memory_allocated() if device.type=='cuda' else None,
        'retained_queries_used_for_selection':False,**provenance})
@@ -244,11 +273,17 @@ def main():
     p.add_argument('--config',type=Path,required=True);p.add_argument('--run-id',required=True)
     p.add_argument('--mode',choices=['train','evaluate'],required=True)
     p.add_argument('--method',choices=['full','anchor']);p.add_argument('--seed',type=int)
+    p.add_argument('--learning-rate',type=float,choices=[0.01,0.1])
     p.add_argument('--sources',type=Path,required=True);p.add_argument('--sources-sha',required=True)
     p.add_argument('--training-runs',type=Path);p.add_argument('--training-runs-sha')
     for name in ('data-dir','cache-dir','run-root','deployment-manifest','deployment-manifest-sha','environment-manifest'):
         p.add_argument('--'+name)
     a=p.parse_args();cfg=read(a.config);cfg['run_id']=a.run_id
+    if a.learning_rate is not None:
+        cfg['max_lr']=a.learning_rate;cfg['requested_learning_rate']=a.learning_rate
+    if cfg.get('query_role')=='development_only_no_retained_evaluation':
+        if a.mode!='train' or a.seed!=0 or a.learning_rate is None:
+            raise ValueError('B07 accepts only registered seed0 training arms, no full-query evaluation')
     for name in ('data_dir','cache_dir','run_root','deployment_manifest','deployment_manifest_sha','environment_manifest'):
         if getattr(a,name):cfg[name]=getattr(a,name)
     if cfg['n_places']!=3300 or cfg['development_ids']!=[600,1099]:raise ValueError('fixed protocol mismatch')

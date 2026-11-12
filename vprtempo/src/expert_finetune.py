@@ -68,10 +68,14 @@ def gradients(model,a,p,n,margin,method):
             feedback*=active_mask[:,None]
             all_grad=(feedback.T@a)/max(count,1)
             result=list(all_grad.split([w.shape[0] for w in model.weights],dim=0))
+    raw_norm=float(torch.sqrt(sum(g.square().sum() for g in result)))
     result=model.mask_gradient(result)
+    masked_norm=float(torch.sqrt(sum(g.square().sum() for g in result)))
     if not torch.isfinite(loss) or any(not torch.isfinite(g).all() for g in result):
         raise FloatingPointError('nonfinite loss/gradient; no update applied')
-    return result,{'loss':float(loss.detach()),'valid':count,'active':active}
+    return result,{'loss':float(loss.detach()),'valid':count,'active':active,
+                  'unmasked_gradient_norm':raw_norm,'masked_gradient_norm':masked_norm,
+                  'mask_retained_gradient_ratio':masked_norm/max(raw_norm,1e-30) if raw_norm else 1.}
 
 
 @torch.no_grad()
@@ -92,13 +96,40 @@ def apply_gradients(model,gs,lr,max_relative_step):
     scale=min(1.,max_relative_step*current/max(lr*gnorm,1e-30))
     before=[w.clone() for w in model.weights]
     for w,g in zip(model.weights,gs):w.add_(g,alpha=-lr*scale)
+    proposed=[w.clone() for w in model.weights]
     projected=model.project_signs()
     if any(not torch.isfinite(w).all() for w in model.weights):
         for w,b in zip(model.weights,before):w.copy_(b)
         raise FloatingPointError('nonfinite update restored previous state')
-    delta=float(torch.sqrt(sum((w-b).square().sum() for w,b in zip(model.weights,before))))
+    details=_step_details(before,proposed,list(model.weights),current)
     return {'gradient_norm':gnorm,'step_scale':scale,'projected_connections':projected,
-            'actual_relative_step':delta/max(current,1e-30)}
+            'nominal_step_norm':lr*scale*gnorm,**details}
+
+
+@torch.no_grad()
+def _step_details(before,proposed,after,wnorm):
+    pre=float(torch.sqrt(sum((p-b).square().sum() for p,b in zip(proposed,before))))
+    actual=float(torch.sqrt(sum((a-b).square().sum() for a,b in zip(after,before))))
+    removed=float(torch.sqrt(sum((a-p).square().sum() for a,p in zip(after,proposed))))
+    return {'pre_projection_step_norm':pre,'actual_step_norm':actual,'projection_change_norm':removed,
+            'projection_retained_step_ratio':actual/max(pre,1e-30) if pre else 1.,
+            'pre_projection_relative_step':pre/max(wnorm,1e-30),
+            'actual_relative_step':actual/max(wnorm,1e-30)}
+
+
+@torch.no_grad()
+def preview_gradients(model,gs,lr,max_relative_step):
+    """Inspect a hypothetical constrained step on copies, without state updates."""
+    current=weight_norm(model);gnorm=float(torch.sqrt(sum(g.square().sum() for g in gs)))
+    scale=min(1.,max_relative_step*current/max(lr*gnorm,1e-30))
+    before=[w.detach() for w in model.weights]
+    proposed=[w.clone().add_(g,alpha=-lr*scale) for w,g in zip(model.weights,gs)]
+    after=[]
+    for i,w in enumerate(proposed):
+        signs=getattr(model,f'signs_{i}')
+        after.append(torch.where(signs>0,w.clamp_min(0),torch.where(signs<0,w.clamp_max(0),torch.zeros_like(w))))
+    return {'gradient_norm':gnorm,'step_scale':scale,'nominal_step_norm':lr*scale*gnorm,
+            **_step_details(before,proposed,after,current)}
 
 
 def make_schedule(initial,epochs,seed,gap=50):
@@ -167,3 +198,34 @@ def calibrate(model,train,plan,batch_size,device,cfg):
     if tensor_digest(model.state_dict())!=before:raise RuntimeError('calibration mutated the initial state')
     return {'margin':chosen,'lr':lr,'profiles':profiles,'gradient_profiles':norms,
             'initial_weight_norm':wnorm,'uses_query_data':False,'both_methods_share_recipe':True}
+
+
+def probe_diagnostics(model,train,rows,margin,method,lr,max_relative_step,batch_size,device):
+    """Fixed training triplets: objective, descriptor gaps and hypothetical update."""
+    before=tensor_digest(model.state_dict());metrics=[];gaps=[];positive=[];negative=[];norms=[]
+    valid_count=active_count=0;weighted_loss=0.
+    for part in rows.split(batch_size):
+        a,p,n=triplet_batch(train,part,device)
+        with torch.no_grad():
+            da,ha,va=model.encode(a);dp,_,vp=model.encode(p);dn,_,vn=model.encode(n)
+            valid=va&vp&vn
+            sp=(da*dp).sum(1);sn=(da*dn).sum(1)
+            gaps.extend((sp-sn)[valid].cpu().tolist());positive.extend(sp[valid].cpu().tolist())
+            negative.extend(sn[valid].cpu().tolist());norms.extend(ha.norm(dim=1)[valid].cpu().tolist())
+        gs,diag=gradients(model,a,p,n,margin,method)
+        metrics.append({**diag,**preview_gradients(model,gs,lr,max_relative_step)})
+        valid_count+=diag['valid'];active_count+=diag['active'];weighted_loss+=diag['loss']*diag['valid']
+    if tensor_digest(model.state_dict())!=before:raise RuntimeError('probe mutated model state')
+    def mean(values):return sum(values)/len(values) if values else None
+    result={'triplets':len(rows),'valid':valid_count,'loss':weighted_loss/max(valid_count,1),
+       'active_fraction':active_count/max(valid_count,1),'positive_cosine_mean':mean(positive),
+       'negative_cosine_mean':mean(negative),'gap_mean':mean(gaps),
+       'gap_quantiles':torch.tensor(gaps,dtype=torch.float64).quantile(torch.tensor([0.,.25,.5,.75,1.],dtype=torch.float64)).tolist() if gaps else [],
+       'anchor_raw_norm_mean':mean(norms),'model_state_unchanged':True,
+       'uses_query_data':False,'method':method,'lr':lr,'margin':margin,'batches':metrics}
+    keys=['unmasked_gradient_norm','masked_gradient_norm','mask_retained_gradient_ratio',
+          'pre_projection_step_norm','actual_step_norm','projection_change_norm','projection_retained_step_ratio',
+          'actual_relative_step']
+    result['batch_means']={k:mean([m[k] for m in metrics]) for k in keys}
+    result['maximum_relative_step']=max(m['actual_relative_step'] for m in metrics)
+    return result

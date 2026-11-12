@@ -5,13 +5,15 @@ import unittest
 import json
 import hashlib
 import tempfile
+import importlib.util
+import subprocess
 
 import torch
 from torch.nn import functional as F
 
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
 from vprtempo.src.expert_finetune import (ExpertFeature,tensor_digest,gradients,apply_gradients,
-                                        make_schedule,calibrate)
+                                        make_schedule,calibrate,probe_diagnostics,preview_gradients)
 
 
 class WarmStartChecks(unittest.TestCase):
@@ -99,6 +101,44 @@ class WarmStartChecks(unittest.TestCase):
             result=choose_locked({},runs,'test',root)
             selected={v['method']:v['epoch'] for v in result['selection_results']}
             self.assertEqual(selected,{'full':2,'anchor':1})
+
+    def test_probe_and_preview_do_not_mutate_or_consume_rng(self):
+        model,_=self.model();torch.manual_seed(19)
+        train=torch.randn(2,120,4,dtype=torch.float64)
+        initial={s:model.encode(train[i])[0].detach() for i,s in enumerate(['spring','fall'])}
+        plan,_=make_schedule(initial,1,0,50)
+        state=tensor_digest(model.state_dict());rng=torch.get_rng_state().clone()
+        result=probe_diagnostics(model,train,plan[0][:128],0.1,'anchor',0.1,1e-4,16,torch.device('cpu'))
+        self.assertEqual(state,tensor_digest(model.state_dict()));self.assertTrue(torch.equal(rng,torch.get_rng_state()))
+        self.assertEqual(result['triplets'],128);self.assertEqual(result['valid'],128)
+        self.assertFalse(result['uses_query_data']);self.assertTrue(result['model_state_unchanged'])
+
+    def test_preview_step_matches_actual_and_diagnostics_decompose_projection(self):
+        model,_=self.model();gs=[w.detach().clone()*2 for w in model.weights]
+        before=tensor_digest(model.state_dict())
+        preview=preview_gradients(model,gs,1.,2.)
+        self.assertEqual(before,tensor_digest(model.state_dict()))
+        actual=apply_gradients(model,gs,1.,2.)
+        for key in preview:self.assertEqual(preview[key],actual[key])
+        self.assertGreater(actual['projection_change_norm'],0.)
+        self.assertLessEqual(actual['actual_step_norm'],actual['pre_projection_step_norm'])
+
+    def test_instrumentation_matches_frozen_B06_updates(self):
+        # The reference is the committed B06 implementation, not a rewritten formula.
+        source=subprocess.check_output(['git','-C',str(ROOT),'show',
+            '2d2527da1536840460c7e7d87c8f313e616b0f27:vprtempo/src/expert_finetune.py'],text=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'b06_reference.py';path.write_text(source)
+            spec=importlib.util.spec_from_file_location('frozen_b06_reference',path)
+            old=importlib.util.module_from_spec(spec);spec.loader.exec_module(old)
+            for method in ['full','anchor']:
+                new,ww=self.model();legacy=old.ExpertFeature(ww)
+                torch.manual_seed(12);triplets=[torch.randn(8,4,dtype=torch.float64) for _ in range(3)]
+                for _ in range(4):
+                    gnew,_=gradients(new,*triplets,0.1,method);gold,_=old.gradients(legacy,*triplets,0.1,method)
+                    for x,y in zip(gnew,gold):torch.testing.assert_close(x,y,rtol=0,atol=0)
+                    apply_gradients(new,gnew,0.1,1e-4);old.apply_gradients(legacy,gold,0.1,1e-4)
+                    self.assertEqual(tensor_digest(new.state_dict()),old.tensor_digest(legacy.state_dict()))
 
 
 if __name__=='__main__':unittest.main()
