@@ -1,6 +1,10 @@
 # CURRENT.md — VPRTempo 研究入口
 
-最后更新：2026-11-13
+最后更新：2026-11-14
+
+## 夜间自主探索（2026-11-14）
+
+用户已启动8小时Goal；首阶段固定4个B07检查点补夏冬诊断，不重训。入口`IDEA1-covstdp/experiments/eval_night_checkpoints.py`，配置`IDEA1-covstdp/phase4/configs/night_diagnostic.json`。每阶段固定commit及部署，不改旧基线；全夜最多2GPU并行／12新作业／8训练run／120GPU分钟，截止北京时间2026-11-14 08:56:20。审批及详细请求、决策和资源日志在开题项目夜间记录。
 
 ## B10 原版地点输出冬季评价（2026-11-13）
 

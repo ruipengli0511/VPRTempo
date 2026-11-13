@@ -1,0 +1,9 @@
+{
+  "experiment_stage": "NIGHT-B11",
+  "n_places": 3300,
+  "query_start": 600,
+  "query_count": 2700,
+  "GT_tolerance": 0,
+  "device": "cuda:0",
+  "training_updates": 0
+}
