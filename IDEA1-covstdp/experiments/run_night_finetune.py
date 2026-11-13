@@ -150,7 +150,8 @@ def train(cfg, sources, out, provenance, method, seed, arm):
         for epoch, rows in enumerate(plan, 1):
             total = {'epoch': epoch, 'batches': 0, 'valid': 0, 'active': 0, 'task_loss_sum': 0.,
                      'retention_loss_sum': 0., 'retention_samples': 0, 'actual_step_sum': 0., 'step_capped': 0,
-                     'combined_gradient_norm_sum': 0., 'weighted_retention_gradient_norm_sum': 0.}
+                     'combined_gradient_norm_sum': 0., 'task_masked_gradient_norm_sum': 0.,
+                     'weighted_retention_gradient_norm_sum': 0.}
             numerical = False
             for batch, ids in enumerate(rows.split(cfg['batch_size'])):
                 a, p, n = triplet_batch(training, ids, device)
@@ -171,12 +172,14 @@ def train(cfg, sources, out, provenance, method, seed, arm):
                 total['actual_step_sum'] += update['actual_step_norm']
                 total['step_capped'] += int(update['step_scale'] < 1)
                 total['combined_gradient_norm_sum'] += update['gradient_norm']
+                total['task_masked_gradient_norm_sum'] += diag['masked_gradient_norm']
                 total['weighted_retention_gradient_norm_sum'] += diag.get('weighted_retention_gradient_norm', 0.)
                 if batch % 20 == 0:
                     log.write(json.dumps({'epoch': epoch, 'batch': batch, **diag, **update}) + '\n')
                     log.flush()
             total['mean_task_loss'] = total['task_loss_sum'] / max(total['valid'], 1)
             total['mean_retention_loss'] = total['retention_loss_sum'] / max(total['retention_samples'], 1)
+            total['retention_to_task_ratio_of_summed_norms'] = total['weighted_retention_gradient_norm_sum'] / max(total['task_masked_gradient_norm_sum'], 1e-30)
             total['relative_drift'] = relative_drift(model, initial)
             history.append(total)
             print(json.dumps(total), flush=True)
