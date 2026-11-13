@@ -228,6 +228,7 @@ def train(cfg, sources, out, provenance, method, seed, arm):
         'pilot_training_updates': hold_calibration['pilot_updates'],
         'counted_training_segments': 1 + int(hold_calibration['pilot_updates'] > 0),
         'training_loop_with_development_and_probe_s': training_s,
+        'peak_allocated_GPU_bytes': torch.cuda.max_memory_allocated(device) if device.type == 'cuda' else None,
         'source': source, 'retained_queries_used_for_selection': False, 'winter_used_for_selection': False,
         'scope': 'known-map exposed-condition diagnostic; not independent final test', **provenance})
 
@@ -261,6 +262,8 @@ def main():
     env = environment_identity(cfg.get('environment_manifest'), ROOT / 'pixi.lock', required=deployed)
     sources = checked_json(a.sources, a.sources_sha)
     provenance = {'code': code, 'environment': env, 'runtime': runtime_identity(torch, np)}
+    provenance['runtime']['device'] = cfg['device']
+    provenance['runtime']['device_name'] = torch.cuda.get_device_name(torch.device(cfg['device'])) if str(cfg['device']).startswith('cuda') else 'cpu'
     out, _ = resolve_locations(cfg, ROOT, deployed)
     out.mkdir(parents=True, exist_ok=False)
     write_json(out / 'sources.json', sources)
