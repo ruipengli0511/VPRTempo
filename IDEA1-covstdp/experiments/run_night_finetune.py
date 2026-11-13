@@ -182,6 +182,7 @@ def train(cfg, sources, out, provenance, method, seed, arm):
             total['retention_to_task_ratio_of_summed_norms'] = total['weighted_retention_gradient_norm_sum'] / max(total['task_masked_gradient_norm_sum'], 1e-30)
             total['relative_drift'] = relative_drift(model, initial)
             history.append(total)
+            write_json(out / f'training_epoch_{epoch}.json', total)
             print(json.dumps(total), flush=True)
             if total['relative_drift'] >= cfg['max_relative_drift']:
                 stop = 'drift_guard'
