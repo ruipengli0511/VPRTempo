@@ -1,6 +1,12 @@
 # CURRENT.md — VPRTempo 研究入口
 
-最后更新：2026-11-09
+最后更新：2026-11-13
+
+## B09 冬季冻结评价（2026-11-13）
+
+`eval/winter-frozen` 从 B08 `46ab86eef28b312505a276c1bf7122802086c98a` 分出；仅新增冬季评价适配器与配置，不改训练或权重。沿用 B08 夏季锁定的 Full／Anchor 第2轮及冻结原feature，三seed共9组，3300参考地点／2700冬季查询，GT容差0。冬季不选轮次、不调参；空间分区仅用于诊断，不称为冬季开发集。
+
+入口：`IDEA1-covstdp/experiments/eval_frozen_winter.py`；配置：`IDEA1-covstdp/phase4/configs/frozen_winter.json`。批次请求、提交状态和结果按开题项目的 B09 记录查阅。
 
 ## 研究范围
 

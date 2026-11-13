@@ -1,0 +1,13 @@
+{
+  "experiment_stage": "B09",
+  "n_places": 3300,
+  "query_start": 600,
+  "query_count": 2700,
+  "query_season": "winter",
+  "GT_tolerance": 0,
+  "locked_epoch": 2,
+  "descriptor_dim": 4704,
+  "device": "cuda:0",
+  "training_updates": 0,
+  "model_selection": "reuse B08 lock; no winter selection"
+}
