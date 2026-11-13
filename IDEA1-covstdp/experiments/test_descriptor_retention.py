@@ -44,6 +44,17 @@ def main():
         apply_gradients(m1, original, .01, 1e-4)
         apply_gradients(m2, off, .01, 1e-4)
         assert tensor_digest(m1.state_dict()) == tensor_digest(m2.state_dict())
+    # Invalid anchors/teacher rows do not enter the auxiliary denominator.
+    invalid_a = a.clone(); invalid_a[0].zero_()
+    invalid_teacher = teacher.clone(); invalid_teacher[1].zero_()
+    invalid_g, detail = retention_gradient(model, invalid_a, invalid_teacher)
+    invalid_d, _, anchor_valid = model.encode(invalid_a)
+    valid = anchor_valid & (invalid_teacher.norm(dim=1) > 1e-8)
+    assert detail['retention_valid'] == 7
+    oracle_loss = 0.5 * (invalid_d[valid] - invalid_teacher[valid]).square().sum(1).mean()
+    oracle_g = model.mask_gradient(torch.autograd.grad(oracle_loss, tuple(model.weights)))
+    for u, v in zip(invalid_g, oracle_g):
+        torch.testing.assert_close(u, v, atol=1e-12, rtol=1e-10)
     same = model.encode(a)[0].detach()
     zero, diag = retention_gradient(model, a, same)
     assert diag['retention_loss'] == 0 and all(torch.count_nonzero(g) == 0 for g in zero)

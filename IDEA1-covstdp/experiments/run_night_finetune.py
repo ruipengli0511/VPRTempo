@@ -166,8 +166,8 @@ def train(cfg, sources, out, provenance, method, seed, arm):
                 total['valid'] += diag['valid']
                 total['active'] += diag['active']
                 total['task_loss_sum'] += diag['loss'] * diag['valid']
-                total['retention_loss_sum'] += diag.get('retention_loss', 0.) * len(ids)
-                total['retention_samples'] += len(ids)
+                total['retention_loss_sum'] += diag.get('retention_loss', 0.) * diag.get('retention_valid', 0)
+                total['retention_samples'] += diag.get('retention_valid', 0)
                 total['actual_step_sum'] += update['actual_step_norm']
                 total['step_capped'] += int(update['step_scale'] < 1)
                 total['combined_gradient_norm_sum'] += update['gradient_norm']
