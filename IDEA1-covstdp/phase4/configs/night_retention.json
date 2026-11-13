@@ -1,0 +1,42 @@
+{
+  "data_dir": "/data/run01/sczc061/Lrp-Program/Datasets/Nordland",
+  "cache_dir": "/data/run01/sczc061/Lrp-Program/Cache/idea1-inputs/b04-benchmark-v1",
+  "run_root": "/data/run01/sczc061/Lrp-Program/Runs/idea1",
+  "n_places": 3300,
+  "development_ids": [
+    600,
+    1099
+  ],
+  "epochs": 8,
+  "evaluation_epochs": [
+    0,
+    1,
+    2,
+    4,
+    8
+  ],
+  "batch_size": 16,
+  "negative_min_gap": 50,
+  "calibration_batches": 8,
+  "margin_candidates": [
+    0.1,
+    0.3,
+    0.5
+  ],
+  "min_calibration_active_fraction": 0.05,
+  "max_lr": 0.1,
+  "min_lr": 1e-07,
+  "max_relative_step": 0.0001,
+  "max_relative_drift": 0.05,
+  "device": "cuda",
+  "probe_triplets": 128,
+  "experiment_stage": "NIGHT",
+  "query_role": "development_then_locked_known_condition_diagnostic",
+  "protocol_id": "night-known-map-retention",
+  "retention_policy": "calibrate_train_only",
+  "retention_pilot_batches": 32,
+  "retention_target_gradient_ratio": 0.5,
+  "retention_coefficient_min": 1.0,
+  "retention_coefficient_max": 1000.0,
+  "fixed_retention_coefficient": null
+}
