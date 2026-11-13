@@ -204,29 +204,36 @@ def train(cfg, sources, out, provenance, method, seed, arm):
     payload = torch.load(cp['path'], map_location='cpu', weights_only=True)
     model.load_state_dict(payload['model'], strict=True)
     model.requires_grad_(False)
-    full_pixels = load_inputs(pointer, False)
-    winter_pointer = checked_json(sources['winter_inputs'], sources['winter_inputs_sha256'])
-    if sha_file(winter_pointer['pixel_cache']) != winter_pointer['pixel_cache_sha256']:
-        raise ValueError('winter input changed')
-    winter = torch.load(winter_pointer['pixel_cache'], map_location='cpu', weights_only=True)['pixels']
-    if any(not torch.equal(full_pixels[s], winter[s]) for s in ('spring', 'fall')):
-        raise ValueError('reference pixels differ')
-    before_eval = tensor_digest(model.state_dict())
-    features = extract(model, {**full_pixels, 'winter': winter['winter']}, device)
     complete = []
-    for season in ('summer', 'winter'):
-        r = score_season(features, season)
-        file = f'locked_{season}_predictions.json'
-        write_json(out / file, r.pop('predictions'))
-        complete.append({'query_season': season, 'predictions_file': file, **r})
-    if tensor_digest(model.state_dict()) != before_eval:
-        raise RuntimeError('final evaluation changed model')
+    deferred = bool(cfg.get('defer_full_evaluation', False))
+    if deferred:
+        selection['status'] = 'provisional_per_seed_not_common'
+        write_json(out / 'selection.json', selection)
+    else:
+        full_pixels = load_inputs(pointer, False)
+        winter_pointer = checked_json(sources['winter_inputs'], sources['winter_inputs_sha256'])
+        if sha_file(winter_pointer['pixel_cache']) != winter_pointer['pixel_cache_sha256']:
+            raise ValueError('winter input changed')
+        winter = torch.load(winter_pointer['pixel_cache'], map_location='cpu', weights_only=True)['pixels']
+        if any(not torch.equal(full_pixels[s], winter[s]) for s in ('spring', 'fall')):
+            raise ValueError('reference pixels differ')
+        before_eval = tensor_digest(model.state_dict())
+        features = extract(model, {**full_pixels, 'winter': winter['winter']}, device)
+        complete = []
+        for season in ('summer', 'winter'):
+            r = score_season(features, season)
+            file = f'locked_{season}_predictions.json'
+            write_json(out / file, r.pop('predictions'))
+            complete.append({'query_season': season, 'predictions_file': file, **r})
+        if tensor_digest(model.state_dict()) != before_eval:
+            raise RuntimeError('final evaluation changed model')
     write_json(out / 'summary.json', {'status': 'complete', 'phase': 'night_finetune', 'method': method,
         'seed': seed, 'arm': arm, 'stop_reason': stop, 'epoch_results': results, 'checkpoints': checkpoints,
         'epoch_diagnostics': history, 'probe_history': probes, 'probe_identity': probe_identity,
         'calibration': step, 'retention_calibration': hold_calibration, 'retention_coefficient': coefficient,
         'schedule_identity': schedule_identity, 'initial_parity': parity, 'initial_state_sha256': initial_hash,
-        'selection': selection, 'locked_results': complete, 'final_model_state_unchanged': True,
+        'selection': selection, 'locked_results': complete, 'final_model_state_unchanged': None if deferred else True,
+        'deferred_common_epoch_evaluation': deferred,
         'main_training_updates': sum(r['batches'] for r in history),
         'pilot_training_updates': hold_calibration['pilot_updates'],
         'counted_training_segments': 1 + int(hold_calibration['pilot_updates'] > 0),
@@ -246,18 +253,20 @@ def main():
     p.add_argument('--seed', type=int, choices=[0, 1, 2], required=True)
     p.add_argument('--arm', choices=['retention', 'plain'], required=True)
     p.add_argument('--learning-rate', type=float, required=True)
+    p.add_argument('--defer-evaluation', action='store_true')
     for k in ('data-dir', 'cache-dir', 'run-root', 'deployment-manifest',
               'deployment-manifest-sha', 'environment-manifest'):
         p.add_argument('--' + k)
     a = p.parse_args()
     cfg = read(a.config)
-    cfg.update(run_id=a.run_id, max_lr=a.learning_rate, requested_learning_rate=a.learning_rate)
+    cfg.update(run_id=a.run_id, max_lr=a.learning_rate, requested_learning_rate=a.learning_rate,
+               defer_full_evaluation=a.defer_evaluation)
     for k in ('data_dir', 'cache_dir', 'run_root', 'deployment_manifest',
               'deployment_manifest_sha', 'environment_manifest'):
         if getattr(a, k):
             cfg[k] = getattr(a, k)
-    if a.seed != 0:
-        raise ValueError('this pilot entry locks a single seed; expansion requires a deferred common-epoch evaluation adapter')
+    if a.seed != 0 and not a.defer_evaluation:
+        raise ValueError('seed expansion requires deferred common-epoch evaluation; use --defer-evaluation')
     if cfg['n_places'] != 3300 or cfg['development_ids'] != [600, 1099] or not 1e-4 <= a.learning_rate <= 0.1:
         raise ValueError('registered protocol or learning rate invalid')
     code = code_identity(ROOT, cfg.get('deployment_manifest'), cfg.get('deployment_manifest_sha'))
