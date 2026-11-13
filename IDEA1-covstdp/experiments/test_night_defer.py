@@ -20,17 +20,17 @@ def main():
     model = ExpertFeature([torch.randn(9, 5)])
     pixels = {'spring': torch.randn(128, 5), 'fall': torch.randn(128, 5), 'summer': torch.zeros(1, 5)}
     features = night.extract(model, {s: pixels[s] for s in ('spring', 'fall')}, torch.device('cpu'), normalized=True)
-    plan, identity = make_schedule(features, 1, 1, 50)
+    plan, identity = make_schedule(features, 2, 1, 50)
     source = {'seed': 1, 'checkpoint_sha256': 'synthetic-source'}
     sources = {'models': [source], 'summer_inputs': 'synthetic-summer-pointer', 'summer_inputs_sha256': 'dummy',
                'winter_inputs': 'FORBIDDEN-WINTER', 'winter_inputs_sha256': 'dummy',
                'pairing_references': {'1': {'schedule_identity': identity,
                     'initial_state_sha256': tensor_digest(model.state_dict())}}}
-    cfg = {'n_places': 128, 'device': 'cpu', 'epochs': 1, 'negative_min_gap': 50,
+    cfg = {'n_places': 128, 'device': 'cpu', 'epochs': 2, 'negative_min_gap': 50,
            'batch_size': 16, 'calibration_batches': 2, 'margin_candidates': [.1, .3, .5],
            'min_calibration_active_fraction': .01, 'max_lr': .01, 'requested_learning_rate': .01,
            'min_lr': 1e-7, 'max_relative_step': .01, 'max_relative_drift': 1.,
-           'probe_triplets': 32, 'evaluation_epochs': [0, 1], 'defer_full_evaluation': True}
+           'probe_triplets': 32, 'evaluation_epochs': [0, 1, 2], 'defer_full_evaluation': True}
     old = {name: getattr(night, name) for name in ('checked_json', 'load_inputs', 'load_source', 'score', 'baseline_parity')}
     accesses = []
     def pointer(path, expected):
@@ -60,6 +60,9 @@ def main():
             assert result['counted_training_segments'] == 1 and result['pilot_training_updates'] == 0
             assert result['selection']['chosen_epoch'] == 0
             assert accesses == ['synthetic-summer-pointer']
+            receipt = json.loads((out / 'training_epoch_2.json').read_bytes())
+            assert receipt['epoch'] == 2 and 'development' not in receipt
+            assert receipt['relative_drift'] == result['epoch_diagnostics'][1]['relative_drift']
     finally:
         for name, value in old.items(): setattr(night, name, value)
     print('PASS: synthetic training deferred full summer and winter access, no independent seed query selection; not a VPR performance experiment')
