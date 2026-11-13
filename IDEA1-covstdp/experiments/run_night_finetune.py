@@ -253,6 +253,8 @@ def main():
               'deployment_manifest_sha', 'environment_manifest'):
         if getattr(a, k):
             cfg[k] = getattr(a, k)
+    if a.seed != 0:
+        raise ValueError('this pilot entry locks a single seed; expansion requires a deferred common-epoch evaluation adapter')
     if cfg['n_places'] != 3300 or cfg['development_ids'] != [600, 1099] or not 1e-4 <= a.learning_rate <= 0.1:
         raise ValueError('registered protocol or learning rate invalid')
     code = code_identity(ROOT, cfg.get('deployment_manifest'), cfg.get('deployment_manifest_sha'))
