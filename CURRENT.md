@@ -2,6 +2,10 @@
 
 最后更新：2026-11-13
 
+## B10 原版地点输出冬季评价（2026-11-13）
+
+`eval/original-winter` 从 B09 固定版本分出，仅增加原版地点输出的冬季评价。复用B04三个seed的原版权重、B09冬季缓存，先对拍全部2700夏季原版top5及分数，再评价3300地点／2700冬季查询。无新训练、无归一化描述子检索或冬季调参。入口 `IDEA1-covstdp/experiments/eval_original_winter.py`，配置 `IDEA1-covstdp/phase4/configs/original_winter.json`。
+
 ## B09 冬季冻结评价（2026-11-13）
 
 `eval/winter-frozen` 从 B08 `46ab86eef28b312505a276c1bf7122802086c98a` 分出；仅新增冬季评价适配器与配置，不改训练或权重。沿用 B08 夏季锁定的 Full／Anchor 第2轮及冻结原feature，三seed共9组，3300参考地点／2700冬季查询，GT容差0。冬季不选轮次、不调参；空间分区仅用于诊断，不称为冬季开发集。
