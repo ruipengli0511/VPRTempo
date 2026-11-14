@@ -47,6 +47,9 @@ def execute(cfg, sources, out, provenance, method):
                      data_dir=cfg['data_dir'], cache_dir=cfg['cache_dir'], max_lr=lr, requested_learning_rate=lr,
                      retention_policy='fixed', fixed_retention_coefficient=coefficient,
                      defer_full_evaluation=True, device=cfg['device'])
+        # A reused seed0 config must identify this run's actual deployment.
+        for key in ('deployment_manifest', 'deployment_manifest_sha', 'environment_manifest'):
+            child[key] = cfg[key]
         child_out, _ = resolve_locations(child, ROOT, provenance['code']['source'] == 'verified_deployment_snapshot')
         child_out.mkdir(parents=True, exist_ok=False)
         d = child_out.parent

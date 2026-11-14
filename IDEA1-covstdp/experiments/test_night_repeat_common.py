@@ -32,6 +32,10 @@ def main():
     def fake_train(cfg, sources, out, prov, method, seed, arm):
         assert cfg['defer_full_evaluation'] and cfg['retention_policy'] == 'fixed'
         assert cfg['fixed_retention_coefficient'] == 100. and cfg['requested_learning_rate'] == .1
+        assert cfg['deployment_manifest'] == 'synthetic-manifest'
+        assert cfg['deployment_manifest_sha'] == 'dummy'
+        assert cfg['environment_manifest'] == 'synthetic-env'
+        assert 'source_checkpoint' not in cfg
         assert seed in (1, 2) and arm == 'retention' and method == 'anchor'
         calls.append(seed)
         write_json(out / 'summary.json', summary(seed, commit))
@@ -66,7 +70,11 @@ def main():
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp);data=root/'data';data.mkdir();prior=root/'prior';prior_out=prior/'artifacts';prior_out.mkdir(parents=True)
             write_json(prior_out/'summary.json', summary(0, 'b'*40))
-            write_json(prior_out/'effective_config.json', {'config': {'device': 'cpu', 'source_checkpoint': 'must_be_removed'}})
+            write_json(prior_out/'effective_config.json', {'config': {
+                'device': 'cpu', 'source_checkpoint': 'must_be_removed',
+                'deployment_manifest': 'old-seed0-manifest',
+                'deployment_manifest_sha': 'old-seed0-sha',
+                'environment_manifest': 'old-environment'}})
             write_json(prior/'result_manifest.json', {'files': []});write_json(prior/'trial_outcome.json', {'status': 'complete'})
             declared = {'run_dir': str(prior), 'expected_commit': 'b'*40,
                         'summary_sha256': sha_file(prior_out/'summary.json'),
